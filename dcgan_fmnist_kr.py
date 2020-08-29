@@ -334,8 +334,6 @@ class dcgan_fmnist_kr():
         ###各エポック後のエポック成果計測の準備###
 
         #各エポックの終わりに、そのエポックの成果として、lossとaccuracyを算出する。
-        #1エポック内の各イテレーションでそれらを算出しているが、それらはエポック途中の成長途上のものであり、エポックの成果ではない。
-        #よって、あくまでも各エポック後にそれらを算出したい。
         #そのためには、固定のzと固定の本物画像が必要である。
         #固定のzと固定の本物画像、その場で生成した偽物画像を、各エポックの終了時点でdiscriminatorと__gan_combinedに順伝播させ、lossとaccuracyを得る。
         #固定の本物画像については、全訓練データを使用するのが理想であるが、重いデータを毎エポックで順伝播させると動作も重くなる。
@@ -386,12 +384,12 @@ class dcgan_fmnist_kr():
                 imgs_real_mb = imgs_train[mask]
             
                 #本物ラベルと偽物ラベルのベクトルを生成
-                #訓練に使用する正解ラベルのみ、基本的に、本物ラベルは「1」、偽物ラベルは「0」で満たすが、
-                #指定されたラベル平滑化のεで加減算する。
+                #訓練に使用する正解ラベルのみ、本物ラベルは「1」、偽物ラベルは「0」で満たすが、さらに指定されたラベル平滑化のεで加減算する。
                 label_real_mb = np.ones((batch_size_mb,1)) - ls_epsilon # ((batch_size_mb,1)
                 label_fake_mb = np.zeros((batch_size_mb,1)) + ls_epsilon # ((batch_size_mb,1)　
                 
                 ###discriminatorの訓練###
+                
                 #discriminator本体そのものに対して訓練を施す。
                 #最初に偽物画像の判定をさせて訓練。
                 #潜在変数をbatch_size_mb分生成
@@ -409,24 +407,18 @@ class dcgan_fmnist_kr():
                 accuracy_it = (accuracy_fake_it + accuracy_real_it) * 0.5
                                 
                 ###generatorの訓練###
-                #generator本体ではなく、__gan_combinedに対して訓練を施す。
-                #discriminatorは訓練対象外なので、generatorのみ訓練される。
-                #generatorが偽物画像を生成→discriminatorが偽物画像を判定　が順伝播なので、
-                #誤差逆伝播＆generatorの訓練は、discriminatorの出力と正解値との誤差をdiscriminatorを通して
-                #generatorまで逆伝播させる必要がある（「鮭の川上り」）。
-                #generatorに偽物画像を生成させ、discrimonatorに判定させる。
-                #よって、generatorにまで誤差逆伝播させるには、__gan_combinedでgenerator→discriminatorと一気通貫に順伝播させる。
+                
+                #generator本体ではなく、__gan_combinedに対して訓練を施す。discriminatorは訓練対象外で、誤差逆伝播の通り道でしかない。
+                #_gan_combinedで一気通貫　<順伝播>潜在変数→generator偽物生成→discriminator判定→<逆伝播>誤差→discriminator→generator
                 #潜在変数をbatch_size_mb分生成
                 z_mb = np.random.normal(0, 1, (batch_size_mb, self._z_dim)) #(batch_size_mb, self._z_dim)
-                #__gan_combinedで一気通貫に順伝播→一気通貫に誤差逆伝播＆generatorのみ訓練
-                g_loss_it = self._gan_combined.train_on_batch(z_mb, label_real_mb)
-                #＜重要＞generatorの損失関数を変更　「Non-saturating GAN」
-                #従来の学術的な損失関数は、Σlog( 1-D(G(z)) ) であるが、これだと、generatorの訓練が進まない（特に初期）。
-                #よって、新たな損失関数が定義された。-Σlog(D(G(z)))
-                #これは、出力全件に対する正解ラベルがことごとく全部「1」のみの場合のBinaryCrossEntropyLoss値にもなっている。
-                #よって、上記のg_lossの実装となる。
-                #ただ、この実装は世間一般で既に広く行われている実装であり、
-                #改善された損失関数に対する実装をあらたにここで考え出したわけではない。
+                #_gan_combinedで一気通貫に順伝播→一気通貫に誤差逆伝播＆generatorのみ訓練（パラメーター更新）
+                g_loss_it = self._gan_combined.train_on_batch(z_mb, label_real_mb) #偽物ではなく本物ラベル「1」　Non-saturating GAN
+                #↑generatorの損失関数を変更　「Non-saturating GAN」
+                #従来の損失関数　Σlog( 1-D(G(z)) ) 　⇒　-Σlog(D(G(z)))　に変更。「Non-saturating GAN」と呼ばれる。
+                #従来の損失関数だとgeneratorの訓練が進まない（特に初期）。
+                #-Σlog(D(G(z)))　は、出力全件に対する正解ラベルが全部「1」のみの場合のBinaryCrossEntropyLoss値にもなっている。
+                #よって、上記のg_loss_itの実装となる。ただ、この実装は既に世間一般で広く行われているようである。
                 
                 iter_count += 1
                 
