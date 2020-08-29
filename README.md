@@ -242,7 +242,7 @@ imgsとlabelsと同数の潜在変数を内部で生成して、GeneratorのLoss
 - d_loss, d_accuracy<BR>
 与えられた画像と正解ラベルからDiscriminatorが計算したLossとAccuracy。スカラー。
 - g_loss<BR>
-与えられた画像と正解ラベルと同数の潜在変数（shapeは(N, 1)）を生成し、Generatorが計算したLoss。スカラー。
+与えられた画像と正解ラベルと同数の潜在変数（shapeは(N, インスタンス化時指定のz_dim)）を生成し、Generatorが計算したLoss。スカラー。
 
 ### ＜関数＞z = generate_z(self, len_z)
 指定された個数の潜在変数を生成します。<br>
