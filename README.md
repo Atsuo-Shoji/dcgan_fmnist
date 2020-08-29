@@ -254,7 +254,7 @@ imgsとlabelsと同数の潜在変数を内部で生成して、GeneratorのLoss
 
 ・戻り値：<BR>
 - z<br>
-平均0、標準偏差1の正規分布に従った、len_z個の潜在変数の配列。shapeは(len_z, 1)。
+平均0、標準偏差1の正規分布に従った、len_z個の潜在変数の配列。shapeは(len_z, インスタンス化時指定のz_dim)。
   
 ### ＜getterプロパティ＞img_shape(self)
 このモデルインスタンスが認識している、画像のshapeを返します。
