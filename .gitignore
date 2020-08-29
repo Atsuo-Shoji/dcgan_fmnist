@@ -1,0 +1,8 @@
+.ipynb_checkpoints/
+__pycache__/
+model_files/
+results/
+Chapter_4_DCGAN*
+DCGAN_FMNIST_Keras_dev.ipynb
+readme_pre/
+common/__pycache__/
