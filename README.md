@@ -27,7 +27,7 @@ dcgan_fmnist_kr.pyのclass dcgan_fmnist_kr が、モデルの実体です。<br>
 ![internal_structure](https://user-images.githubusercontent.com/52105933/91521676-2c0ee900-e933-11ea-8f19-bfa3b6604139.png)
 
 このclass dcgan_fmnist_kr をアプリケーション内でインスタンス化して、訓練や画像生成といったpublic関数を呼び出す、という使い方をします。<br>
-Generator、Discriminator、Combied Modelはdcgan_fmnist_kr内部に隠蔽され、外部から利用することはできません。
+**Generator、Discriminator、Combied Modelはdcgan_fmnist_kr内部に隠蔽され、外部から利用することはできません。**
 ```
 #モデルのインポート 
 from dcgan_fmnist_kr import dcgan_fmnist_kr #モデル本体
@@ -57,12 +57,12 @@ class dcgan_fmnist_krのインスタンスを生成する。<br><br>
 |img_shape|tuple|(28, 28, 1)|画像1枚のshape。**チャンネルのaxisは必ず最後であること（Kerasで言うところのdata_format='channels_last'）**<br>今後、このインスタンスは、画像のshapeはここで指定されたものであるという前提で挙動する。変更方法は無い。|
 
 ※Discriminator、Generator、Combined Modelのインスタンス化とcompileについて<br>
-__init()__内で、上記3つのインスタンス化とcompileを行っています。<br>
+\__init()\__内で、上記3つのインスタンス化とcompileを行っています。<br>
 が、以下2つのことを達成するため（train()参照）、若干トリッキーな手順を踏んでいます。<br>
 - Discriminatorの訓練は、Discriminator自身に対して行う。
 - Generatorの訓練は、Combine Modelに対して行うが、その時、Discriminatorは訓練対象外。
 
-・手順：<br>
+・＜参考＞\__init()\__内で行っている手順：<br>
 Generatorをインスタンス化<br>
 Discriminatorをインスタンス化<br>
 ↓<br>
