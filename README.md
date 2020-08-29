@@ -27,7 +27,7 @@ dcgan_fmnist_kr.pyのclass dcgan_fmnist_kr が、モデルの実体です。<br>
 ![internal_structure](https://user-images.githubusercontent.com/52105933/91521676-2c0ee900-e933-11ea-8f19-bfa3b6604139.png)
 
 このclass dcgan_fmnist_kr をアプリケーション内でインスタンス化して、訓練や画像生成といったpublic関数を呼び出す、という使い方をします。<br>
-**Generator、Discriminator、Combied Modelはdcgan_fmnist_kr内部に隠蔽され、外部から利用することはできません。**
+**Generator、Discriminator、Combined Modelはdcgan_fmnist_kr内部に隠蔽され、外部から利用することはできません。**
 ```
 #モデルのインポート 
 from dcgan_fmnist_kr import dcgan_fmnist_kr #モデル本体
@@ -50,7 +50,7 @@ gan_model_instance.change_me(hoge, hoge, …)
 ### class dcgan_fmnist_kr　のインスタンス化　dcgan_fmnist_kr(name, z_dim=100, img_shape=(28, 28, 1))
 class dcgan_fmnist_krのインスタンスを生成する。<br><br>
 ・引数：
-| 名前 | 型 | 必須/値 | 意味 |
+| 名前 | 型 | 必須/既定値 | 意味 |
 | :---         |     :---:      |     :---:     | :---         |
 |name|文字列|必須|このモデルインスタンスの名前。|
 |z_dim|整数|100|潜在変数zの次元。<br>今後、このインスタンスは、潜在変数の次元はここで指定されたものであるという前提で挙動する。変更方法は無い。|
