@@ -52,7 +52,7 @@ gan_model_instance.change_me(hoge, hoge, …)
 ```
 ## class dcgan_fmnist_kr　のpublicインターフェース
 
-class dcgan_fmnist_kr　のpublicインターフェース一覧
+#### class dcgan_fmnist_kr　のpublicインターフェース一覧
 | 名前 | 関数/メソッド/プロパティ | 機能概要・使い方 |
 | :---         |     :---:      | :---         |
 |dcgan_fmnist_kr|     -      |class dcgan_fmnist_kr　のモデルインスタンスを生成する。<br>*model_instance* = dcgan_fmnist_kr(name="hoge", z_dim=100, img_shape=(28, 28, 1)|
@@ -199,7 +199,7 @@ DCGANにおけるラベル平滑化は、以下の通りです。<br>
 <br><br>
 長かったですが、これで、訓練関数train()の説明は終わりです。<br>
 
-### ＜関数＞imgs_generated = *model_instance*.tgenerate(z)
+### ＜関数＞imgs_generated = *model_instance*.generate(z)
 与えられた潜在変数zを使用して、モデルインスタンス内部のGeneratorが画像を生成し、返します。<BR><br>
 ・引数：
 | 名前 | 型 | 必須/既定値 | 意味 |
