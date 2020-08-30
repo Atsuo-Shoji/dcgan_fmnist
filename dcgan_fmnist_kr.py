@@ -335,18 +335,17 @@ class dcgan_fmnist_kr():
 
         #各エポックの終わりに、そのエポックの成果として、lossとaccuracyを算出する。
         #そのためには、固定のzと固定の本物画像が必要である。
-        #固定のzと固定の本物画像、その場で生成した偽物画像を、各エポックの終了時点でdiscriminatorと__gan_combinedに順伝播させ、lossとaccuracyを得る。
         #固定の本物画像については、全訓練データを使用するのが理想であるが、重いデータを毎エポックで順伝播させると動作も重くなる。
         #よって、固定の本物画像は、全訓練データの画像枚数の一部とする。固定のzの個数も同じとする。
-        num_data_fixed_half = np.ceil(num_imgs_train / (5*2)).astype(np.int) #固定のz個数の半分、固定の本物画像、固定の偽物画像の枚数
+        num_data_fixed_half = np.ceil(num_imgs_train / (5*2)).astype(np.int) #固定のz個数の半分(=偽物画像の枚数、固定の本物画像の枚数)
 
-        #固定のz個数、固定の本物画像、固定の偽物画像の枚数　の決定
+        #固定のz個数の半分(=偽物画像の枚数、固定の本物画像の枚数)　の決定
         if num_imgs_train<2500:
             #全訓練データ枚数2500枚未満なら、全部
             num_data_fixed_half = np.floor(num_imgs_train / 2).astype(np.int) 
         elif num_imgs_train<10000:
             #全訓練データ枚数10000枚未満なら、その約4分の1
-            num_data_fixed_half = np.floor(num_imgs_train / (4*2)).astype(np.int) #固定のz個数の半分、固定の本物画像、固定の偽物画像の枚数
+            num_data_fixed_half = np.floor(num_imgs_train / (4*2)).astype(np.int) 
         else:
             #全訓練データ枚数10000枚以上なら、2500
             num_data_fixed_half = 1250
