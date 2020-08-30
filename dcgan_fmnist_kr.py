@@ -250,13 +250,13 @@ class dcgan_fmnist_kr():
         save_pickle_file(val, val_file_path)
         
     def change_me(self, files_dir, g_file_name, d_file_name, val_file_name):
-        #discrimonatorとgenerator、及びDCGAN_FMNIST_krインスタンス変数の保存済ファイルを読み込み、このモデル内で継続使用可能にする。
+        #discrimonatorとgenerator、及びdcgan_fmnist_krインスタンス変数の保存済ファイルを読み込み、このモデル内で継続使用可能にする。
         
         g_file_path = files_dir + g_file_name
         d_file_path = files_dir + d_file_name
         val_file_path = files_dir + val_file_name
         
-        #DCGAN_FMNIST_krインスタンス変数のファイル読み込み
+        #dcgan_fmnist_krインスタンス変数のファイル読み込み
         val = read_pickle_file(val_file_path)
         #val各変数を一旦tempに入れる
         temp_name = val["name"] #名前
@@ -407,7 +407,7 @@ class dcgan_fmnist_kr():
                                 
                 ###generatorの訓練###
                 
-                #generator本体ではなく、__gan_combinedに対して訓練を施す。discriminatorは訓練対象外で、誤差逆伝播の通り道でしかない。
+                #generator本体ではなく、__gan_combinedに対して訓練を施す。discriminatorは訓練対象外なので、誤差逆伝播の通り道でしかない。
                 #_gan_combinedで一気通貫　<順伝播>潜在変数→generator偽物生成→discriminator判定→<逆伝播>誤差→discriminator→generator
                 #潜在変数をbatch_size_mb分生成
                 z_mb = np.random.normal(0, 1, (batch_size_mb, self._z_dim)) #(batch_size_mb, self._z_dim)

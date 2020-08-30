@@ -1,17 +1,19 @@
-# DCGAN（Keras）でFashion-MNISTのニセモノ画像を生成
+# DCGAN（Keras）でFashion-MNISTのフェイク画像を生成
 ![real_vs_fake2](https://user-images.githubusercontent.com/52105933/91588870-c69f1480-e993-11ea-9d55-29fdda05f500.png)
 
-画像データセットFashion-MNISTのニセモノ画像を生成するDCGANです。<BR>
+画像データセットFashion-MNISTのフェイク画像を生成するDCGANです。<BR>
 Kerasで構築しています。
-## 想定する利用者
-は、いません。<BR>
-今さらFashion-MNISTのフェイク画像生成なんて、一体どんなマジメな用途があるというのでしょう。<BR>
-そもそも、Kerasの慣熟訓練と、DCGANの理解のために作ったので・・・。<br>
-ですが、あえて挙げるとすると、<BR>
-MNIST、Fashion-MNISTみたいな、何らかの**軽い**画像データセットで、以下のようなことを考えている人です。
-- ただ訓練、ニセモノ画像生成だけ手軽に行いたい。モデルの中身云々には興味ない。
-- モデルの中身云々も自分で考えて決めて作りたいが、0から作るのはイヤだ。出来合いのものをちょこっと修正したい。
-- 「モデル」は単体で存在しても意味は無く、アプリケーション内で使用される。だったら「モデル」はclass1つにまとまっていて欲しい。アプリケーション内でモデルのclassをインスタンス化して、モデルのいろんなpublic関数を随時使いたい。ネットや本のサンプルコードは**1枚のノートブック上にモデル内の関数がとっ散らかってて、アプリケーションの中でそのままでは使いにくいねん。**
+  
+## 概要
+Kerasで構築したDCGANです。画像データセットFashion-MNISTを訓練データとして使い、そのフェイク画像を生成します。<br><br>
+モデルはclassとして定義され、.pyファイルに収められています。<br>
+何らかのアプリケーションにこの.pyファイルをimportして、このモデルのclassをインスタンス化し、そのインスタンスのpublicインターフェースを用いて、訓練やフェイク画像の生成を行う、という使い方です。<br><br>
+想定するライフサイクルは、<br>
+モデルをインスタンス化　→　このモデルインスタンスをFashion-MNISTで訓練　→　訓練済のモデルインスタンスからフェイク画像を生成　→　訓練済のモデルインスタンスを保存　→　・・・（以降必要に応じて）<br>
+→　別のモデルインスタンスに、その保存した訓練済モデルインスタンスを取り込み、再利用<br>
+といったものです。<br><BR>
+画像データセットは、Fashion-MNIST以外の1チャンネルのグレー画像で軽い物なら、マトモに動くはずです。MNISTは確認済です。<BR>3チャンネルRGBのカラー画像でも軽い物なら動作するはずですが、未確認です。
+
 ## ディレクトリ構成・動かすのに必要な物
 dcgan_fmnist_kr.py<BR>
 DCGAN_FMNIST_Keras_demo.ipynb<BR>
@@ -22,6 +24,8 @@ demo_model_files/<br>
 -------------<br>
 - dcgan_fmnist_kr.py：モデル本体。中身はclass dcgan_fmnist_kr です。モデルを動かすにはcommonフォルダが必要です。
 - DCGAN_FMNIST_Keras_demo.ipynb：デモ用のノートブックです。概要をつかむことが出来ます。このノートブックを動かすにはdemo_model_filesフォルダが必要です。
+- Fashion-MNISTデータセットは含まれていません。scikit-learn経由でダウンロードすることができます。
+  
 ## モデルの構成
 dcgan_fmnist_kr.pyのclass dcgan_fmnist_kr が、モデルの実体です。<br><br>
 ![internal_structure](https://user-images.githubusercontent.com/52105933/91521676-2c0ee900-e933-11ea-8f19-bfa3b6604139.png)
@@ -47,7 +51,24 @@ gan_model_instance.save_me(hoge, hoge, …)
 gan_model_instance.change_me(hoge, hoge, …)
 ```
 ## class dcgan_fmnist_kr　のpublicインターフェース
-### class dcgan_fmnist_kr　のインスタンス化　dcgan_fmnist_kr(name, z_dim=100, img_shape=(28, 28, 1))
+
+class dcgan_fmnist_kr　のpublicインターフェース一覧
+| 名前 | 関数/メソッド/プロパティ | 機能概要・使い方 |
+| :---         |     :---:      | :---         |
+|dcgan_fmnist_kr|     -      |class dcgan_fmnist_kr　のモデルインスタンスを生成する。<br>*model_instance* = dcgan_fmnist_kr(name="hoge", z_dim=100, img_shape=(28, 28, 1)|
+|train|     関数      |モデルインスタンスを訓練する。<br>result = *model_instance*.train(imgs_train=img_train_array, epochs=40, batch_size=128, ls_epsilon=0, sample_img_interval=0)|
+|generate|     関数      |モデルインスタンスが画像を生成する。<br>img_generated = *model_instance*.generate(z=z)|
+|save_me|     メソッド      |モデルインスタンスをファイル保存する。<br>*model_instance*.save_me(files_dir="hoge_dir/", g_file_name="hoge_g", d_file_name="hoge_d", val_file_name="hoge_val")|
+|change_me|     メソッド      |モデルインスタンスに、別のモデルインスタンスを取り込む（移植する）。<br>*model_instance*.change_me(files_dir="hoge_dir/", g_file_name="hoge_g", d_file_name="hoge_d", val_file_name="hoge_val")|
+|discriminate|     関数      |モデルインスタンスが、与えられた画像が本物である確率を判定する。モデルインスタンスの性能計測用。<br>probs = *model_instance*.discriminate(imgs=imgs_array)|
+|evaluate|     関数      |モデルインスタンスが、与えられた画像と正解ラベルから、DiscriminatorのLossとAccuracy、GeneratorのLossを算出する。モデルインスタンスの性能計測用。<br>d_loss, d_accuracy, g_loss = *model_instance*.evaluate(imgs=imgs_array, labels=labels_array)|
+|generate_z|     関数      |モデルインスタンスが、画像生成に使われる潜在変数を生成する。モデルユーザーのための便利機能。<br>z = *model_instance*.generate_z(len_z=20)|
+|img_shape|     getterプロパティ      |モデルインスタンスが認識している、対象とする画像のshape。インスタンス化時に指定された物。<br>img_shape = *model_instance*.img_shape|
+|z_dim|     getterプロパティ      |モデルインスタンスが認識している、材料とする潜在変数の次元。インスタンス化時に指定された物。<br>z_dim = *model_instance*.z_dim|
+|name|     getter/setterプロパティ      |モデルインスタンスの名前。<br>getter : hoge = *model_instance*.name<br>setter : *model_instance*.name = hoge|
+|z_fixed_for_sample|     getterプロパティ      |モデルインスタンスが訓練時にサンプルイメージを生成する際に使用している、固定の潜在変数。<br>z_fixed = *model_instance*.z_fixed_for_sample|
+
+### class dcgan_fmnist_kr　のインスタンス化　*model_instance* = dcgan_fmnist_kr(name, z_dim=100, img_shape=(28, 28, 1))
 class dcgan_fmnist_krのインスタンスを生成する。<br><br>
 ・引数：
 | 名前 | 型 | 必須/既定値 | 意味 |
@@ -76,7 +97,7 @@ Combined Modelをcompile<br>
 （Discriminator.trainable=FalseなのでCombined ModelにとってDiscriminatorは訓練対象外、Generatorのみ訓練対象）<br>
 Generator単体ではcompileは行わない（不要）
 
-### ＜関数＞result = train(self, imgs_train, epochs, batch_size=128, ls_epsilon=0, sample_img_interval=0)
+### ＜関数＞result = *model_instance*.train(imgs_train, epochs, batch_size=128, ls_epsilon=0, sample_img_interval=0)
 モデルを訓練します。<br><br>
 ・引数：
 | 名前 | 型 | 必須/既定値 | 意味 |
@@ -153,7 +174,7 @@ Discriminator.trainable=Falseの状態でCombined Modelをcompileしているの
 の時、サンプル画像を生成・表示します。<br>
 ただし、sample_img_interval<=0の場合、サンプル画像は（最初の・最終エポック含め）一切生成しません。
 
-#### Generatorの損失関数の変更とその実装　Non-Saturating GAN
+#### Generatorの損失関数の変更とその実装　「Non-Saturating GAN」
 同一の評価関数をプラスとマイナスと符号だけ逆転させて、DiscriminatorとGeneratorで綱引し合う古典的なGANは「Min-Max GAN」と呼ばれます。<br><br>
 **・Min-Max GANのGeneratorの損失関数：Σlog( 1 – D(G(z_i)) )** <br>
 ですが、これだと、（特に訓練初期は）GeneratorのLossがほとんど0のままで、Generatorの訓練がほとんど進みません。 <br>
@@ -178,7 +199,7 @@ DCGANにおけるラベル平滑化は、以下の通りです。<br>
 <br><br>
 長かったですが、これで、訓練関数train()の説明は終わりです。<br>
 
-### ＜関数＞imgs_generated = generate(self, z)
+### ＜関数＞imgs_generated = *model_instance*.tgenerate(z)
 与えられた潜在変数zを使用して、モデルインスタンス内部のGeneratorが画像を生成し、返します。<BR><br>
 ・引数：
 | 名前 | 型 | 必須/既定値 | 意味 |
@@ -190,7 +211,7 @@ DCGANにおけるラベル平滑化は、以下の通りです。<br>
 | :---         |     :---:     | :---         |
 |imgs_generated|ndarray <BR>(N, \*インスタンス化時指定のimg_shape)|生成された画像。<br>「N」即ち引数zのデータ個数（axis=0）と同じ個数の画像が生成される。|
 
-### ＜関数＞save_me(self, files_dir, g_file_name="", d_file_name="", val_file_name="")
+### ＜メソッド＞*model_instance*.save_me(files_dir, g_file_name="", d_file_name="", val_file_name="")
 現在のモデルインスタンスの状態をファイル保存し、後に再利用できるようにします。<br>
 具体的には、Generatorのファイル、Discriminatorのファイル、その他の変数のファイル、の合計3ファイルを生成、保存します。<br><br>
 ・引数：
@@ -204,7 +225,7 @@ DCGANにおけるラベル平滑化は、以下の通りです。<br>
 GeneratorとDiscriminatorのファイルはHDF5ファイルです。<br>
 変数のファイルはpickleファイルです。モデルインスタンス名、インスタンス化時に指定されたimg_shapeとz_dim、訓練時のサンプル画像生成に使用する固定の潜在変数、が含まれます。
 
-### ＜関数＞change_me(self, files_dir, g_file_name, d_file_name, val_file_name)
+### ＜メソッド＞*model_instance*.change_me(files_dir, g_file_name, d_file_name, val_file_name)
 保存された別モデルを、自分自身（モデルインスタンス）に取り込み（「移植」）、再利用できるようにします。<br>
 訓練済モデルの再利用などに使用できます。<br>
 具体的には、指定されたGeneratorのファイル、Discriminatorのファイル、その他の変数のファイル、の合計3ファイルを取り込んで、これらのファイルのモデルに成ります。<br><br>
@@ -216,7 +237,7 @@ GeneratorとDiscriminatorのファイルはHDF5ファイルです。<br>
 |d_file_name|文字列|必須|Discriminatorのファイルのファイル名。|
 |val_file_name|文字列|必須|変数のファイルのファイル名。|
 
-### ＜関数＞probs = discriminate(self, imgs)
+### ＜関数＞probs = *model_instance*.discriminate(imgs)
 与えられた画像が本物である確率を、モデルインスタンス内部のDiscriminatorが判定し、返します。<BR>
 このモデルインスタンスの性能計測用です。<BR><br>
 ・引数：
@@ -228,7 +249,7 @@ GeneratorとDiscriminatorのファイルはHDF5ファイルです。<br>
 - probs<BR>
 与えられた各画像それぞれの、本物である確率。shapeは(N, 1)。
 
-### ＜関数＞d_loss, d_accuracy, g_loss = evaluate(self, imgs, labels)
+### ＜関数＞d_loss, d_accuracy, g_loss = *model_instance*.evaluate(imgs, labels)
 与えられた画像と正解ラベルを使用して、モデルインスタンス内部のDiscriminatorがLossとAccuracyを返します。<BR>
 imgsとlabelsと同数の潜在変数を内部で生成して、GeneratorのLossも計算し、返します。<br>
 このモデルインスタンスの性能計測用です。<BR><br>
@@ -244,7 +265,7 @@ imgsとlabelsと同数の潜在変数を内部で生成して、GeneratorのLoss
 - g_loss<BR>
 与えられた画像と正解ラベルと同数の潜在変数（shapeは(N, インスタンス化時指定のz_dim)）を生成し、Generatorが計算したLoss。スカラー。
 
-### ＜関数＞z = generate_z(self, len_z)
+### ＜関数＞z = *model_instance*.generate_z(len_z)
 指定された個数の潜在変数を生成します。<br>
 モデルのユーザーに対する単なる便利機能です。必ずしも使用する必要はありません。<br><br>
 ・引数：
@@ -256,25 +277,23 @@ imgsとlabelsと同数の潜在変数を内部で生成して、GeneratorのLoss
 - z<br>
 平均0、標準偏差1の正規分布に従った、len_z個の潜在変数の配列。shapeは(len_z, インスタンス化時指定のz_dim)。
   
-### ＜getterプロパティ＞img_shape(self)
+### ＜getterプロパティ＞*model_instance*.img_shape
 このモデルインスタンスが認識している、画像のshapeを返します。
 インスタンス化時に指定された物です。
 
-### ＜getterプロパティ＞z_dim(self)
+### ＜getterプロパティ＞*model_instance*.z_dim
 このモデルインスタンスが認識している、潜在変数の次元を返します。
 インスタンス化時に指定された物です。
 
-### ＜getterプロパティ＞name(self)
-このモデルインスタンスの名前を返します。
+### ＜getter/setterプロパティ＞*model_instance*.name
+getterは、このモデルインスタンスの名前を返します。<br>
+setterは、このモデルインスタンスの名前を設定します。<br><br>
+・setterが受け取る値：
+| 型 |  意味 |
+|     :---:      | :---         |
+|文字列|モデルインスタンスの新しい名前。|
 
-### ＜setterプロパティ＞name(self, name)
-このモデルインスタンスの名前を設定します。<br><br>
-・引数：
-| 名前 | 型 | 必須/既定値 | 意味 |
-| :---         |     :---:      |     :---:     | :---         |
-|name|文字列|必須|モデルインスタンスの新しい名前。|
-
-### ＜getterプロパティ＞z_fixed_for_sample(self)
+### ＜getterプロパティ＞*model_instance*.z_fixed_for_sample
 訓練時にサンプル画像を生成する際、固定の潜在変数が使われます。時系列での比較ができるようにするためです。<br>
 このモデルインスタンスが保持しているその固定の潜在変数を返します。<br><br>
 
