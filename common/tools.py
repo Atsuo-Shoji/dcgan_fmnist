@@ -61,8 +61,6 @@ def show_images(imgs, img_shape, rows, cols, channels_first=True, size_unit_inch
     #複数の画像を一覧表示する
     #グレー1チャンネルのみ対応
     
-    #チャンネル数を取得
-    #しかし現在グレー1チャンネルのみ対応。今後のため。
     if channels_first==True:
         C, H, W = img_shape
     else:
@@ -71,7 +69,6 @@ def show_images(imgs, img_shape, rows, cols, channels_first=True, size_unit_inch
     num_imgs = imgs.shape[0]
     
     #imshowの仕様で、チャンネルが1の場合は、そのチャンネルのaxisをつぶさないといけない。
-    #グレー1チャンネルのみ対応
     ch = C - 1
         
     fig, axs = plt.subplots(rows, cols, figsize=(cols*size_unit_inch, rows*size_unit_inch), sharex=True, sharey=True) 
