@@ -123,14 +123,14 @@ Generator単体ではcompileは行わない（不要）
 ・各エポックでの出力文字列：<br>
 ```
 Epoch: 34　　→　エポック番号（0から始まる）
- iteration count: 16415　　→　　総イテレーション回数
- g_loss_epoch: 2.5533969402313232　　→　GeneratorのLoss　エポック終了時の計測値
- d_loss_epoch: 0.25367704033851624　　→　DiscriminatorのLoss　エポック終了時の計測値
- d_accuracy_epoch: 0.8895999789237976　　→　DiscriminatorのAccuracy　エポック終了時の計測値
- Discriminatorは偽物画像1250枚を平均0.17655188の確率で本物と推定　　→　そのままの意味　エポック終了時の計測値
- Discriminatorは本物画像1250枚を平均0.8495131の確率で本物と推定　　→　そのままの意味　エポック終了時の計測値
- Processing time(seconds): 30　　→　このエポックの処理時間（秒）
- Time: 02:00:03　　→　今の時刻
+ iteration count: 16415　　                                         →　総イテレーション回数
+ g_loss_epoch: 2.5533969402313232　　                               →　GeneratorのLoss　エポック終了時の計測値
+ d_loss_epoch: 0.25367704033851624　　                              →　DiscriminatorのLoss　エポック終了時の計測値
+ d_accuracy_epoch: 0.8895999789237976　　                           →　DiscriminatorのAccuracy　エポック終了時の計測値
+ Discriminatorは偽物画像1250枚を平均0.17655188の確率で本物と推定　　 →　そのままの意味　エポック終了時の計測値
+ Discriminatorは本物画像1250枚を平均0.8495131の確率で本物と推定　　  →　そのままの意味　エポック終了時の計測値
+ Processing time(seconds): 30　　                                   →　このエポックの処理時間（秒）
+ Time: 02:00:03　　                                                 →　今の時刻
 ```
 
 #### 訓練関数の構成
