@@ -1,17 +1,12 @@
-# DCGAN（Keras）でFashion-MNISTのフェイク画像を生成
-![real_vs_fake2](https://user-images.githubusercontent.com/52105933/91588870-c69f1480-e993-11ea-9d55-29fdda05f500.png)
+# DCGANをKerasでマジメに構築してみました
 
-画像データセットFashion-MNISTのフェイク画像を生成するDCGANです。<BR>
-Kerasで構築しています。
+DCGANをKerasでマジメに構築してみました。画像データセットはFashion-MNISTを使用しています。<BR><BR>
+![real_vs_fake3](https://user-images.githubusercontent.com/52105933/91722778-b5dde100-ebd5-11ea-9398-b29ef9094590.png)
   
 ## 概要
-Kerasで構築したDCGANです。画像データセットFashion-MNISTを訓練データとして使い、そのフェイク画像を生成します。<br><br>
+Kerasで構築したDCGANです。画像データセットFashion-MNISTを訓練データとして使っています。<br><br>
 モデルはclassとして定義され、.pyファイルに収められています。<br>
-何らかのアプリケーションにこの.pyファイルをimportして、このモデルのclassをインスタンス化し、そのインスタンスのpublicインターフェースを用いて、訓練やフェイク画像の生成を行う、という使い方です。<br><br>
-想定するライフサイクルは、<br>
-モデルをインスタンス化　→　このモデルインスタンスをFashion-MNISTで訓練　→　訓練済のモデルインスタンスからフェイク画像を生成　→　訓練済のモデルインスタンスを保存　→　・・・（以降必要に応じて）<br>
-→　別のモデルインスタンスに、その保存した訓練済モデルインスタンスを取り込み、再利用<br>
-といったものです。<br><BR>
+何らかのアプリケーションにこの.pyファイルをimportして、このモデルのclassをインスタンス化し、そのインスタンスのpublicインターフェースを用いて、訓練や画像の生成、その訓練済モデルインスタンスの保存を行う、という使い方です。<br><br>
 画像データセットは、Fashion-MNIST以外でも、1チャンネルのグレー画像で軽い物なら、マトモに動くはずです。MNISTは確認済です。
 
 ## ディレクトリ構成・動かすのに必要な物
