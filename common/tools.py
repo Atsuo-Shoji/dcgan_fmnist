@@ -59,8 +59,10 @@ def normalize_data(data):
 
 def show_images(imgs, img_shape, rows, cols, channels_first=True, size_unit_inch=1):
     #複数の画像を一覧表示する
+    #グレー1チャンネルのみ対応
     
     #チャンネル数を取得
+    #しかし現在グレー1チャンネルのみ対応。今後のため。
     if channels_first==True:
         C, H, W = img_shape
     else:
@@ -69,13 +71,8 @@ def show_images(imgs, img_shape, rows, cols, channels_first=True, size_unit_inch
     num_imgs = imgs.shape[0]
     
     #imshowの仕様で、チャンネルが1の場合は、そのチャンネルのaxisをつぶさないといけない。
-    #また、チャンネルが1の場合は白黒画像なのでcmapをgreyに、その他は既定値のviridisとする。
-    if C==1:
-        ch = 0
-        cmap = 'gray'
-    else:
-        ch = C
-        cmap = 'viridis'   
+    #グレー1チャンネルのみ対応
+    ch = C - 1
         
     fig, axs = plt.subplots(rows, cols, figsize=(cols*size_unit_inch, rows*size_unit_inch), sharex=True, sharey=True) 
     curr_idx_imgs = 0
@@ -83,9 +80,9 @@ def show_images(imgs, img_shape, rows, cols, channels_first=True, size_unit_inch
         for j in range(cols):
             if curr_idx_imgs < num_imgs:
                 if channels_first==True:
-                    axs[i, j].imshow(imgs[curr_idx_imgs, ch, :, :], cmap=cmap)
+                    axs[i, j].imshow(imgs[curr_idx_imgs, ch, :, :], cmap='gray')
                 else:
-                    axs[i, j].imshow(imgs[curr_idx_imgs, :, :, ch], cmap=cmap)
+                    axs[i, j].imshow(imgs[curr_idx_imgs, :, :, ch], cmap='gray')
             axs[i, j].axis('off')    
             curr_idx_imgs += 1
     plt.show()
