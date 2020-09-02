@@ -122,7 +122,7 @@ Generator単体ではcompileは行わない（不要）
 
 ・各エポックでの出力文字列：<br>
 ```
-Epoch: 34　　→　エポック番号（0から始まる）
+Epoch: 34　　                                                       →　エポック番号（0から始まる）
  iteration count: 16415　　                                         →　総イテレーション回数
  g_loss_epoch: 2.5533969402313232　　                               →　GeneratorのLoss　エポック終了時の計測値
  d_loss_epoch: 0.25367704033851624　　                              →　DiscriminatorのLoss　エポック終了時の計測値
