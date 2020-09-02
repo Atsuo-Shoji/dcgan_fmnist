@@ -173,13 +173,13 @@ Discriminator.trainable=Falseの状態でCombined Modelをcompileしているの
 同一の評価関数をプラスとマイナスと符号だけ逆転させて、DiscriminatorとGeneratorで綱引し合う古典的なGANは「Min-Max GAN」と呼ばれます。<br><br>
 **・Min-Max GANのGeneratorの損失関数：Σlog( 1 – D(G(z_i)) )** <br>
 ですが、これだと、（特に訓練初期は）GeneratorのLossがほとんど0のままで、Generatorの訓練がほとんど進みません。 <br>
-Discriminatorは、訓練初期でまだ未熟とはいえ、砂嵐画像を持ってこられて、「これは本物だ」とはなかなか言わないわけです。<br>
-つまり、G(z)≓0で、1 – D(G(z))≓1，即ち損失値log(ほぼ1)≓0、となります。特に訓練初期にGeneratorのLossがほとんど0のままなのはこれが理由です。<br><br>
+Discriminatorは、訓練初期でまだ未熟とはいえ、同じく未熟なGeneratorが生成した砂嵐画像を持ってこられても、「これは本物だ」とはなかなか言わないです。<br>
+つまり、G(z)≓0で、1 – D(G(z))≓1，即ち損失値log(ほぼ1)≓0、となります。よって、特に訓練初期にGeneratorのLossはほとんど0のままとなってしまいGeneratorの訓練は進まず、引きづられてDiscriminatorの訓練も進まなくなります。<br><br>
 そこで、以下のGeneratorの損失関数が考え出されました。これが「Non-Saturating GAN」です。<br>
 **・Non-Saturating GANのGeneratorの損失関数：-Σlog( D(G(z_i)) )** <br>
 この場合、訓練初期でまだ未熟なDiscriminatorが砂嵐画像を（未熟ではあるものの）容易に「これは偽物だ」と判定すると、D(G(z))≓0、即ち損失値-log( D(G(z)) )は大きな正の数となり、Generatorの訓練は一気に進みます。<br><br>
 実装について。<br>
-Non-Saturating GANのGeneratorの損失関数の-Σlog( D(G(z_i)) )は、「サンプルデータi全件に対応する正解ラベルが全部ことごとく1（True）のみ」の場合のBinaryCrossEntropyLoss値でもあります。<br>
+Non-Saturating GANのGeneratorの損失関数の-Σlog( D(G(z_i)) )は、「サンプルデータi全件に対応する正解ラベルが全部1（True）のみ」の場合のBinaryCrossEntropyLoss値でもあります。<br>
 よって、前掲のごとく、全偽物画像に対して正解ラベル1（本物）を充当する、という、とてもシンプルですがちょっとわかりにくい実装となります。<br>
 ※このNon-Saturating GANのGeneratorの損失関数の実装は、既に一般的に広く行われているようです（実装者がそうと意識しているかはわかりませんが）。
 
