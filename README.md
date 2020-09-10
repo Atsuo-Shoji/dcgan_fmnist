@@ -81,7 +81,7 @@ class dcgan_fmnist_krのインスタンスを生成する。<br><br>
 
 ※Discriminator、Generator、Combined Modelのインスタンス化とcompileについて<br>
 \__init()\__内で、上記3つのインスタンス化とcompileを行っています。<br>
-が、Discriminatorの訓練はDiscriminator自身に対して行いますが、Generatorの訓練はCombine Modelに対して行うため、以下の手順を踏んでいます。<BR><BR>
+Discriminatorの訓練はDiscriminator自身に対して行いますが、Generatorの訓練はCombine Modelに対して行うため、以下の手順を踏んでいます。<BR>
 
 ・＜参考＞\__init()\__内で行っている手順：<br>
 GeneratorとDiscriminatorをインスタンス化<br>
