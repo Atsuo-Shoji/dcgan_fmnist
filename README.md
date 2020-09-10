@@ -5,7 +5,9 @@ DCGANをKerasでマジメに構築してみました。画像データセット�
   
 ## 概要
 Kerasで構築したDCGANです。画像データセットFashion-MNISTを訓練データとして使っています。<br>
-画像データセットは、Fashion-MNIST以外でも、1チャンネルのグレー画像で軽い物なら、マトモに動くはずです。MNISTは確認済です。<BR>
+画像データセットは、Fashion-MNIST以外でも、1チャンネルのグレー画像で軽い物なら、マトモに動くはずです。MNISTは確認済です。
+
+<BR>
 
 ## ディレクトリ構成・動かすのに必要な物
 dcgan_fmnist_kr.py<BR>
@@ -17,7 +19,9 @@ demo_model_files/<br>
 -------------<br>
 - dcgan_fmnist_kr.py：モデル本体。中身はclass dcgan_fmnist_kr です。モデルを動かすにはcommonフォルダが必要です。
 - DCGAN_FMNIST_Keras_demo.ipynb：デモ用のノートブックです。概要をつかむことが出来ます。このノートブックを動かすにはdemo_model_filesフォルダが必要です。
-- Fashion-MNISTデータセットは含まれていません。scikit-learn経由でダウンロードすることができます。<BR>
+- Fashion-MNISTデータセットは含まれていません。scikit-learn経由でダウンロードすることができます。
+  
+<BR>
   
 ## モデルの構成
 dcgan_fmnist_kr.pyのclass dcgan_fmnist_kr が、モデルの実体です。<br><br>
@@ -43,6 +47,9 @@ gan_model_instance.save_me(hoge, hoge, …)
 #別の訓練済モデルをこのモデルインスタンスに移植
 gan_model_instance.change_me(hoge, hoge, …)
 ```
+
+<BR>
+
 ## class dcgan_fmnist_kr　のpublicインターフェース
 
 #### class dcgan_fmnist_kr　のpublicインターフェース一覧
@@ -147,14 +154,14 @@ Epoch: 34　　                                                       →　エ�
 
 <br>
 
-- Discriminator訓練時：
+- Discriminator訓練時<BR>
 Combined ModelにではなくDiscriminator自身に訓練を施します。<br>（誤差逆伝播はDiscriminator自身で止まるから）<br>
 Discriminator.trainable=Falseですが、Discriminator.trainable=Trueの時にcompileしてあるので、単体では訓練されます。<br>
 <br>![train_disc](https://user-images.githubusercontent.com/52105933/91540602-fdeed080-e955-11ea-9d2f-da803e49b321.png)
 
 <BR>
   
-- Generator訓練時：
+- Generator訓練時<BR>
 GeneratorにではなくCombined Modelに訓練を施します。<br>（Generator→Discriminatorと順伝播し、帰り道はDiscriminator→Generatorと一気通貫に誤差逆伝播するから）<br>
 Discriminator.trainable=Falseの状態でCombined Modelをcompileしているので、Discriminatorは誤差逆伝播の通り道になるだけで訓練はされず（パラメーターは更新されず）、Generatorのみ訓練されます。<br>
 <br>![train_gen](https://user-images.githubusercontent.com/52105933/91557082-ca6c7000-e96e-11ea-93ac-00eef1219e5c.png)
@@ -182,17 +189,16 @@ Discriminator.trainable=Falseの状態でCombined Modelをcompileしているの
 <BR>
   
 #### Generatorの損失関数の変更とその実装　「Non-Saturating GAN」
-同一の評価関数をプラスとマイナスと符号だけ逆転させて、DiscriminatorとGeneratorで綱引し合う従来のGANは「Min-Max GAN」と呼ばれます。<br><br>
+同一の評価関数をプラスとマイナスと符号だけ逆転させて、DiscriminatorとGeneratorで綱引し合う従来のGANは「Min-Max GAN」と呼ばれます。<br>
   
 - **Min-Max GANのGeneratorの損失関数：Σlog( 1 – D(G(z_i)) )** <br>
 この損失関数は、（特に訓練初期は）Generatorの訓練がほとんど進まないことが知られています。 <br>
 訓練初期は、D(G(z)がとても低いからです（Discriminatorは訓練初期でまだ未熟とはいえ、同じく未熟なGeneratorが生成した砂嵐画像を本物判定しないため）。
 
-<br>
 そこで、以下のGeneratorの損失関数が考え出されました。これが「Non-Saturating GAN」です。<br>
 
 - **Non-Saturating GANのGeneratorの損失関数：-Σlog( D(G(z_i)) )** <br>
-訓練初期でD(G(z)がとても低いと、むしろ損失値-log( D(G(z)) )は大きな正の数となり、Generatorの訓練は一気に進みます。<br><br>
+訓練初期でD(G(z)がとても低いと、むしろ損失値-log( D(G(z)) )は大きな正の数となり、Generatorの訓練は一気に進みます。<br>
 
 実装について。<br>
 Non-Saturating GANのGeneratorの損失関数の-Σlog( D(G(z_i)) )は、「サンプルデータi全件に対応する正解ラベルが全部1（True）のみ」の場合のBinaryCrossEntropyLoss値でもあります。<br>
