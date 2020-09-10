@@ -193,12 +193,12 @@ Discriminator.trainable=Falseの状態でCombined Modelをcompileしているの
   
 - **Min-Max GANのGeneratorの損失関数：Σ( log( 1 – D(G(z_i)) ) )** <br>
 この損失関数は、（特に訓練初期は）Generatorの訓練がほとんど進まないことが知られています。 <br>
-訓練初期は、D(G(z)がとても低いからです（Discriminatorは訓練初期でまだ未熟とはいえ、同じく未熟なGeneratorが生成した砂嵐画像を本物判定しないため）。
+訓練初期は、D(G(z))がとても低いからです（Discriminatorは訓練初期でまだ未熟とはいえ、同じく未熟なGeneratorが生成した砂嵐画像を本物判定しないため）。
 
 そこで、以下のGeneratorの損失関数が考え出されました。これが「Non-Saturating GAN」です。<br>
 
 - **Non-Saturating GANのGeneratorの損失関数：-Σ( log( D(G(z_i)) ) )** <br>
-訓練初期でD(G(z)がとても低いと、むしろ損失値-log( D(G(z)) )は大きな正の数となり、Generatorの訓練は一気に進みます。<br>
+訓練初期でD(G(z))がとても低いと、むしろ損失値-log( D(G(z)) )は大きな正の数となり、Generatorの訓練は一気に進みます。<br>
 
 実装について。<br>
 Non-Saturating GANのGeneratorの損失関数の-Σ( log( D(G(z_i)) ) )は、「サンプルデータi全件に対応する正解ラベルが全部1（True）のみ」の場合のBinaryCrossEntropyLoss値でもあります。<br>
