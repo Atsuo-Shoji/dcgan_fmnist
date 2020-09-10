@@ -201,7 +201,7 @@ Discriminator.trainable=Falseの状態でCombined Modelをcompileしているの
 訓練初期でD(G(z)がとても低いと、むしろ損失値-log( D(G(z)) )は大きな正の数となり、Generatorの訓練は一気に進みます。<br>
 
 実装について。<br>
-Non-Saturating GANのGeneratorの損失関数の-Σlog( D(G(z_i)) )は、「サンプルデータi全件に対応する正解ラベルが全部1（True）のみ」の場合のBinaryCrossEntropyLoss値でもあります。<br>
+Non-Saturating GANのGeneratorの損失関数の-Σ( log( D(G(z_i)) ) )は、「サンプルデータi全件に対応する正解ラベルが全部1（True）のみ」の場合のBinaryCrossEntropyLoss値でもあります。<br>
 よって、前掲のごとく、全偽物画像に対して正解ラベル1（本物）を充当する、という実装となります。<br>
 ※このNon-Saturating GANのGeneratorの損失関数の実装は、既に一般的に広く行われているようです（実装者がそうと意識しているかはわかりませんが）。
 
@@ -249,9 +249,9 @@ GeneratorとDiscriminatorのファイルはHDF5ファイルです。<br>
 <BR>
   
 ### ＜メソッド＞*model_instance*.change_me(files_dir, g_file_name, d_file_name, val_file_name)
-保存された別モデルを、自分自身（モデルインスタンス）に取り込み（「移植」）、再利用できるようにします。<br>
+保存された別モデルを、自分自身に取り込み（「移植」）、再利用できるようにします。<br>
 訓練済モデルの再利用などに使用できます。<br>
-具体的には、指定されたGeneratorのファイル、Discriminatorのファイル、その他の変数のファイル、の合計3ファイルを取り込んで、これらのファイルのモデルに成ります。<br><br>
+具体的には、指定されたGeneratorのファイル、Discriminatorのファイル、その他の変数のファイル、の合計3ファイルを取り込んで、これらのファイルのモデルに成り変わります。<br><br>
 ・引数：
 | 名前 | 型 | 必須/既定値 | 意味 |
 | :---         |     :---:      |     :---:     | :---         |
