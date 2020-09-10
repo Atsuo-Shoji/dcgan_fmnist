@@ -191,13 +191,13 @@ Discriminator.trainable=Falseの状態でCombined Modelをcompileしているの
 #### Generatorの損失関数の変更とその実装　「Non-Saturating GAN」
 同一の評価関数をプラスとマイナスと符号だけ逆転させて、DiscriminatorとGeneratorで綱引し合う従来のGANは「Min-Max GAN」と呼ばれます。<br>
   
-- **Min-Max GANのGeneratorの損失関数：Σlog( 1 – D(G(z_i)) )** <br>
+- **Min-Max GANのGeneratorの損失関数：Σ( log( 1 – D(G(z_i)) ) )** <br>
 この損失関数は、（特に訓練初期は）Generatorの訓練がほとんど進まないことが知られています。 <br>
 訓練初期は、D(G(z)がとても低いからです（Discriminatorは訓練初期でまだ未熟とはいえ、同じく未熟なGeneratorが生成した砂嵐画像を本物判定しないため）。
 
 そこで、以下のGeneratorの損失関数が考え出されました。これが「Non-Saturating GAN」です。<br>
 
-- **Non-Saturating GANのGeneratorの損失関数：-Σlog( D(G(z_i)) )** <br>
+- **Non-Saturating GANのGeneratorの損失関数：-Σ( log( D(G(z_i)) ) )** <br>
 訓練初期でD(G(z)がとても低いと、むしろ損失値-log( D(G(z)) )は大きな正の数となり、Generatorの訓練は一気に進みます。<br>
 
 実装について。<br>
