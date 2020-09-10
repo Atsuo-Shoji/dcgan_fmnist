@@ -5,7 +5,7 @@ DCGANをKerasでマジメに構築してみました。画像データセット�
   
 ## 概要
 Kerasで構築したDCGANです。画像データセットFashion-MNISTを訓練データとして使っています。<br>
-画像データセットは、Fashion-MNIST以外でも、1チャンネルのグレー画像で軽い物なら、マトモに動くはずです。MNISTは確認済です。
+画像データセットは、Fashion-MNIST以外でも、1チャンネルのグレー画像で軽い物なら、マトモに動くはずです。MNISTは確認済です。<BR>
 
 ## ディレクトリ構成・動かすのに必要な物
 dcgan_fmnist_kr.py<BR>
@@ -17,7 +17,7 @@ demo_model_files/<br>
 -------------<br>
 - dcgan_fmnist_kr.py：モデル本体。中身はclass dcgan_fmnist_kr です。モデルを動かすにはcommonフォルダが必要です。
 - DCGAN_FMNIST_Keras_demo.ipynb：デモ用のノートブックです。概要をつかむことが出来ます。このノートブックを動かすにはdemo_model_filesフォルダが必要です。
-- Fashion-MNISTデータセットは含まれていません。scikit-learn経由でダウンロードすることができます。
+- Fashion-MNISTデータセットは含まれていません。scikit-learn経由でダウンロードすることができます。<BR>
   
 ## モデルの構成
 dcgan_fmnist_kr.pyのclass dcgan_fmnist_kr が、モデルの実体です。<br><br>
@@ -61,6 +61,8 @@ gan_model_instance.change_me(hoge, hoge, …)
 |name|     getter/setterプロパティ      |モデルインスタンスの名前。<br>getter : hoge = *model_instance*.name<br>setter : *model_instance*.name = hoge|
 |z_fixed_for_sample|     getterプロパティ      |モデルインスタンスが訓練時にサンプルイメージを生成する際に使用している、固定の潜在変数。<br>z_fixed = *model_instance*.z_fixed_for_sample|
 
+<BR>
+
 ### class dcgan_fmnist_kr　のインスタンス化　*model_instance* = dcgan_fmnist_kr(name, z_dim=100, img_shape=(28, 28, 1))
 class dcgan_fmnist_krのインスタンスを生成する。<br><br>
 ・引数：
@@ -85,6 +87,8 @@ Discriminator.trainable=False　に設定<BR>
 Combined Modelをインスタンス化してcompile<br>
 （Discriminator.trainable=FalseなのでCombined ModelにとってDiscriminatorは訓練対象外、Generatorのみ訓練対象）
 
+<BR>
+  
 ### ＜関数＞result = *model_instance*.train(imgs_train, epochs, batch_size=128, ls_epsilon=0, sample_img_interval=0)
 モデルを訓練します。<br><br>
 ・引数：
@@ -126,9 +130,13 @@ Epoch: 34　　                                                       →　エ�
  Time: 02:00:03　　                                                 →　今の時刻
 ```
 
+<BR>
+  
 #### 訓練関数の構成
 ![train_func_structure](https://user-images.githubusercontent.com/52105933/91554115-7448fe00-e969-11ea-90c6-8cac20ebf5fe.png)
 
+<BR>
+  
 #### DiscriminatorとGeneratorの訓練
 
 以下の通りです。
@@ -137,17 +145,22 @@ Epoch: 34　　                                                       →　エ�
 |Discriminator|Discriminator|
 |Generator|コンテナのCombined Model<br>（GeneratorとDiscriminatorを一気通貫で順伝播＆誤差逆伝播するから）|
 
-<br><br>
-・Discriminator訓練時：<br>
+<br>
+
+- Discriminator訓練時：
 Combined ModelにではなくDiscriminator自身に訓練を施します。<br>（誤差逆伝播はDiscriminator自身で止まるから）<br>
 Discriminator.trainable=Falseですが、Discriminator.trainable=Trueの時にcompileしてあるので、単体では訓練されます。<br>
 <br>![train_disc](https://user-images.githubusercontent.com/52105933/91540602-fdeed080-e955-11ea-9d2f-da803e49b321.png)
 
-・Generator訓練時：<br>
+<BR>
+  
+- Generator訓練時：
 GeneratorにではなくCombined Modelに訓練を施します。<br>（Generator→Discriminatorと順伝播し、帰り道はDiscriminator→Generatorと一気通貫に誤差逆伝播するから）<br>
 Discriminator.trainable=Falseの状態でCombined Modelをcompileしているので、Discriminatorは誤差逆伝播の通り道になるだけで訓練はされず（パラメーターは更新されず）、Generatorのみ訓練されます。<br>
 <br>![train_gen](https://user-images.githubusercontent.com/52105933/91557082-ca6c7000-e96e-11ea-93ac-00eef1219e5c.png)
 
+<BR>
+  
 #### 各エポック終了時の指標測定と、そのための固定データ準備
 各エポック終了時点で、モデルの訓練度合いを見るため、以下の指標を測定します。<br>
 エポック間で比較できるように、指標算出の元になるデータは固定とし、エポック反復に入る前に準備します。<br>
@@ -158,26 +171,36 @@ Discriminator.trainable=Falseの状態でCombined Modelをcompileしているの
 
 この各エポックでの測定指標がlist化され、訓練関数の戻り値resultの要素（前掲）となります。<br>
 
+<BR>
+  
 #### サンプル画像の生成と表示
 指定されたエポック数（train()の引数「sample_img_interval」）毎に、32枚の画像をGeneratorが生成し、表示します。<br><br>
 時系列での比較が容易になるように、固定の（毎回同じ）潜在変数を使用して、画像を生成します。<br>
-また、最初のエポック（エポック番号0）と最終エポックには、サンプル画像を生成・表示します。<br>
+最初のエポック（エポック番号0）と最終エポックには、サンプル画像を生成・表示します。<br>
 ただし、sample_img_interval<=0の場合、サンプル画像は（最初の・最終エポック含め）一切生成しません。
 
+<BR>
+  
 #### Generatorの損失関数の変更とその実装　「Non-Saturating GAN」
 同一の評価関数をプラスとマイナスと符号だけ逆転させて、DiscriminatorとGeneratorで綱引し合う従来のGANは「Min-Max GAN」と呼ばれます。<br><br>
-**・Min-Max GANのGeneratorの損失関数：Σlog( 1 – D(G(z_i)) )** <br>
+  
+- **Min-Max GANのGeneratorの損失関数：Σlog( 1 – D(G(z_i)) )** <br>
 この損失関数は、（特に訓練初期は）Generatorの訓練がほとんど進まないことが知られています。 <br>
-訓練初期は、D(G(z_i)がとても低いからです（Discriminatorは訓練初期でまだ未熟とはいえ、同じく未熟なGeneratorが生成した砂嵐画像を本物判定しないため）。
-<br><br>
+訓練初期は、D(G(z)がとても低いからです（Discriminatorは訓練初期でまだ未熟とはいえ、同じく未熟なGeneratorが生成した砂嵐画像を本物判定しないため）。
+
+<br>
 そこで、以下のGeneratorの損失関数が考え出されました。これが「Non-Saturating GAN」です。<br>
-**・Non-Saturating GANのGeneratorの損失関数：-Σlog( D(G(z_i)) )** <br>
-訓練初期でD(G(z_i)がとても低いと、むしろ損失値-log( D(G(z)) )は大きな正の数となり、Generatorの訓練は一気に進みます。<br><br>
+
+- **Non-Saturating GANのGeneratorの損失関数：-Σlog( D(G(z_i)) )** <br>
+訓練初期でD(G(z)がとても低いと、むしろ損失値-log( D(G(z)) )は大きな正の数となり、Generatorの訓練は一気に進みます。<br><br>
+
 実装について。<br>
 Non-Saturating GANのGeneratorの損失関数の-Σlog( D(G(z_i)) )は、「サンプルデータi全件に対応する正解ラベルが全部1（True）のみ」の場合のBinaryCrossEntropyLoss値でもあります。<br>
-よって、前掲のごとく、全偽物画像に対して正解ラベル1（本物）を充当する、という、とてもシンプルですがちょっとわかりにくい実装となります。<br>
+よって、前掲のごとく、全偽物画像に対して正解ラベル1（本物）を充当する、という実装となります。<br>
 ※このNon-Saturating GANのGeneratorの損失関数の実装は、既に一般的に広く行われているようです（実装者がそうと意識しているかはわかりませんが）。
 
+<BR>
+  
 #### 正解ラベルのラベル平滑化
 訓練に使用する正解ラベルは、本物なら「1」、偽物なら「0」の数値になっています。<BR>
 これを、「ラベル平滑化（label smoothing）」すると、モデルの性能が良くなった、という報告が一部にあるので、実装してみました。<br><BR>
@@ -186,8 +209,8 @@ DCGANにおけるラベル平滑化は、以下の通りです。<br>
 本物の正解ラベル [1, 1, 1, 1] ⇒ε=0.1で平滑化⇒ [0.9, 0.9, 0.9, 0.9]<br>
 偽物の正解ラベル [0, 0, 0, 0] ⇒ε=0.1で平滑化⇒ [0.1, 0.1, 0.1, 0.1]<br><BR>
 本モデルにも適用してみましたが・・・目立った効果はありませんでした。（Fashion-MNIST程度では効果が無い？）
-<br><br>
-長かったですが、これで、訓練関数train()の説明は終わりです。<br>
+
+<br>
 
 ### ＜関数＞imgs_generated = *model_instance*.generate(z)
 与えられた潜在変数zを使用して、モデルインスタンス内部のGeneratorが画像を生成し、返します。<BR><br>
@@ -201,6 +224,8 @@ DCGANにおけるラベル平滑化は、以下の通りです。<br>
 | :---         |     :---:     | :---         |
 |imgs_generated|ndarray <BR>(N, \*インスタンス化時指定のimg_shape)|生成された画像。<br>「N」即ち引数zのデータ個数（axis=0）と同じ個数の画像が生成される。|
 
+<BR>
+  
 ### ＜メソッド＞*model_instance*.save_me(files_dir, g_file_name="", d_file_name="", val_file_name="")
 現在のモデルインスタンスの状態をファイル保存し、後に再利用できるようにします。<br>
 具体的には、Generatorのファイル、Discriminatorのファイル、その他の変数のファイル、の合計3ファイルを生成、保存します。<br><br>
@@ -215,6 +240,8 @@ DCGANにおけるラベル平滑化は、以下の通りです。<br>
 GeneratorとDiscriminatorのファイルはHDF5ファイルです。<br>
 変数のファイルはpickleファイルです。モデルインスタンス名、インスタンス化時に指定されたimg_shapeとz_dim、訓練時のサンプル画像生成に使用する固定の潜在変数、が含まれます。
 
+<BR>
+  
 ### ＜メソッド＞*model_instance*.change_me(files_dir, g_file_name, d_file_name, val_file_name)
 保存された別モデルを、自分自身（モデルインスタンス）に取り込み（「移植」）、再利用できるようにします。<br>
 訓練済モデルの再利用などに使用できます。<br>
@@ -227,6 +254,8 @@ GeneratorとDiscriminatorのファイルはHDF5ファイルです。<br>
 |d_file_name|文字列|必須|Discriminatorのファイルのファイル名。|
 |val_file_name|文字列|必須|変数のファイルのファイル名。|
 
+<BR>
+  
 ### ＜関数＞probs = *model_instance*.discriminate(imgs)
 与えられた画像が本物である確率を、モデルインスタンス内部のDiscriminatorが判定し、返します。<BR>
 このモデルインスタンスの性能計測用です。<BR><br>
@@ -239,6 +268,8 @@ GeneratorとDiscriminatorのファイルはHDF5ファイルです。<br>
 - probs<BR>
 与えられた各画像それぞれの、本物である確率。shapeは(N, 1)。
 
+<BR>
+  
 ### ＜関数＞d_loss, d_accuracy, g_loss = *model_instance*.evaluate(imgs, labels)
 与えられた画像と正解ラベルを使用して、モデルインスタンス内部のDiscriminatorがLossとAccuracyを返します。<BR>
 imgsとlabelsと同数の潜在変数を内部で生成して、GeneratorのLossも計算し、返します。<br>
@@ -255,6 +286,8 @@ imgsとlabelsと同数の潜在変数を内部で生成して、GeneratorのLoss
 - g_loss<BR>
 与えられた画像と正解ラベルと同数の潜在変数（shapeは(N, インスタンス化時指定のz_dim)）を生成し、Generatorが計算したLoss。スカラー。
 
+<BR>
+  
 ### ＜関数＞z = *model_instance*.generate_z(len_z)
 指定された個数の潜在変数を生成します。<br>
 モデルのユーザーに対する単なる便利機能です。必ずしも使用する必要はありません。<br><br>
@@ -266,15 +299,21 @@ imgsとlabelsと同数の潜在変数を内部で生成して、GeneratorのLoss
 ・戻り値：<BR>
 - z<br>
 平均0、標準偏差1の正規分布に従った、len_z個の潜在変数の配列。shapeは(len_z, インスタンス化時指定のz_dim)。
+
+<BR>
   
 ### ＜getterプロパティ＞*model_instance*.img_shape
 このモデルインスタンスが認識している、画像のshapeを返します。
 インスタンス化時に指定された物です。
 
+<BR>
+  
 ### ＜getterプロパティ＞*model_instance*.z_dim
 このモデルインスタンスが認識している、潜在変数の次元を返します。
 インスタンス化時に指定された物です。
 
+<BR>
+  
 ### ＜getter/setterプロパティ＞*model_instance*.name
 getterは、このモデルインスタンスの名前を返します。<br>
 setterは、このモデルインスタンスの名前を設定します。<br><br>
@@ -283,6 +322,8 @@ setterは、このモデルインスタンスの名前を設定します。<br><
 |     :---:      | :---         |
 |文字列|モデルインスタンスの新しい名前。|
 
+<BR>
+  
 ### ＜getterプロパティ＞*model_instance*.z_fixed_for_sample
 訓練時にサンプル画像を生成する際、固定の潜在変数が使われます。時系列での比較ができるようにするためです。<br>
 このモデルインスタンスが保持しているその固定の潜在変数を返します。<br><br>
