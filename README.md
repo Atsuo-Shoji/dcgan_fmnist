@@ -4,18 +4,16 @@ DCGANをKerasでマジメに構築してみました。画像データセット�
 ![real_vs_fake3](https://user-images.githubusercontent.com/52105933/91722778-b5dde100-ebd5-11ea-9398-b29ef9094590.png)
   
 ## 概要
-Kerasで構築したDCGANです。画像データセットFashion-MNISTを訓練データとして使っています。<br><br>
-モデルはclassとして定義され、.pyファイルに収められています。<br>
-何らかのアプリケーションにこの.pyファイルをimportして、このモデルのclassをインスタンス化し、そのインスタンスのpublicインターフェースを用いて、訓練や画像の生成、その訓練済モデルインスタンスの保存を行う、という使い方です。<br><br>
+Kerasで構築したDCGANです。画像データセットFashion-MNISTを訓練データとして使っています。<br>
 画像データセットは、Fashion-MNIST以外でも、1チャンネルのグレー画像で軽い物なら、マトモに動くはずです。MNISTは確認済です。
 
 ## ディレクトリ構成・動かすのに必要な物
 dcgan_fmnist_kr.py<BR>
 DCGAN_FMNIST_Keras_demo.ipynb<BR>
 common/<br>
-└tools.py<br>
+&nbsp;└tools.py<br>
 demo_model_files/<br>
-└（h5ファイルやpickleファイル）<br>
+&nbsp;└（h5ファイルやpickleファイル）<br>
 -------------<br>
 - dcgan_fmnist_kr.py：モデル本体。中身はclass dcgan_fmnist_kr です。モデルを動かすにはcommonフォルダが必要です。
 - DCGAN_FMNIST_Keras_demo.ipynb：デモ用のノートブックです。概要をつかむことが出来ます。このノートブックを動かすにはdemo_model_filesフォルダが必要です。
@@ -25,7 +23,7 @@ demo_model_files/<br>
 dcgan_fmnist_kr.pyのclass dcgan_fmnist_kr が、モデルの実体です。<br><br>
 ![internal_structure](https://user-images.githubusercontent.com/52105933/91521676-2c0ee900-e933-11ea-8f19-bfa3b6604139.png)
 
-このclass dcgan_fmnist_kr をアプリケーション内でインスタンス化して、訓練や画像生成といったpublic関数を呼び出す、という使い方をします。<br>
+このclass dcgan_fmnist_kr をアプリケーション内でインスタンス化して、訓練や画像生成といったpublicインターフェースを呼び出す、という使い方をします。<br>
 **Generator、Discriminator、Combined Modelはdcgan_fmnist_kr内部に隠蔽され、外部から利用することはできません。**
 ```
 #モデルのインポート 
