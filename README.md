@@ -100,7 +100,7 @@ Generator単体ではcompileは行わない（不要）
 |imgs_train|ndarray <BR>(N, \*インスタンス化時指定のimg_shape)|必須|訓練データ。<br>画素値の範囲は[0, 1]でも[0, 255]でもよい。|
 |epochs|整数|必須|訓練のエポック数。|
 |batch_size|整数|128|1イテレーションのバッチサイズ。|
-|ls_epsilon|浮動小数点|0|訓練に使用する正解ラベルのラベル平滑化のε。値域は[0, 1.0]。|
+|ls_epsilon|浮動小数点数|0|訓練に使用する正解ラベルのラベル平滑化のε。値域は[0, 1.0]。|
 |sample_img_interval|整数|0|何エポック毎にサンプル画像を生成し表示するか。<br>0以下の場合、生成しない。<br>1以上の場合、最初のエポックと最終エポックでは必ず生成・表示される|
 
 ・戻り値「result」（Dictionary）の内部要素：
@@ -109,7 +109,7 @@ Generator単体ではcompileは行わない（不要）
 |name|文字列|このモデルインスタンス名。|
 |epochs|整数|train()呼び出し時に指定されたエポック数。|
 |batch_size|整数|train()呼び出し時に指定されたバッチサイズ。|
-|ls_epsilon|浮動小数点|train()呼び出し時に指定された、正解ラベルのラベル平滑化のε。|
+|ls_epsilon|浮動小数点数|train()呼び出し時に指定された、正解ラベルのラベル平滑化のε。|
 |d_loss_epochs|list|各エポック後に測定したDiscriminatorのLossのエポック毎の記録。listの1要素は1エポック。|
 |d_acuracy_epochs|list|各エポック後に測定したDiscriminatorのAccuracyのエポック毎の記録。listの1要素は1エポック。|
 |g_loss_epochs|list|各エポック後に測定したGeneratorのLossのエポック毎の記録。listの1要素は1エポック。|
