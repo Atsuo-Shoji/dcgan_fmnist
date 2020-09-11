@@ -205,7 +205,7 @@ Discriminator.trainable=Falseの状態でCombined Modelをcompileしているの
 実装について。<br>
 Non-Saturating GANのGeneratorの損失関数の-Σ( log( D(G(z_i)) ) )は、「サンプルデータi全件に対応する正解ラベルが全部1（True）のみ」の場合のBinaryCrossEntropyLoss値でもあります。<br>
 よって、前掲のごとく、全偽物画像に対して正解ラベル1（本物）を充当する、という実装となります。<br>
-※このNon-Saturating GANのGeneratorの損失関数の実装は、既に一般的に広く行われているようです（実装者がそうと意識しているかはわかりませんが）。<BR>
+※このNon-Saturating GANのGeneratorの損失関数の実装は、既に一般的に広く行われているようです。<BR>
 
 まとめると、以下の通りです。
 | GANの種類 | Generatorの損失関数 |実装概要|
