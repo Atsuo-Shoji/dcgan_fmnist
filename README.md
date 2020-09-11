@@ -181,10 +181,12 @@ Discriminator.trainable=Falseの状態でCombined Modelをcompileしているの
 <BR>
   
 #### サンプル画像の生成と表示
-指定されたエポック数（train()の引数「sample_img_interval」）毎に、32枚の画像をGeneratorが生成し、表示します。<br><br>
+指定されたエポック数（train()の引数「sample_img_interval」）毎に、32枚の画像をGeneratorが生成し、表示します。<br>
 時系列での比較が容易になるように、固定の（毎回同じ）潜在変数を使用して、画像を生成します。<br>
-最初のエポック（エポック番号0）と最終エポックには、サンプル画像を生成・表示します。<br>
-ただし、sample_img_interval<=0の場合、サンプル画像は（最初の・最終エポック含め）一切生成しません。
+| train()の引数「sample_img_interval」 | サンプル画像を生成・表示するエポック |
+|   :---:   | :---         | 
+|0より大きい|最初のエポック（エポック番号「0」）→<BR>以降sample_img_intervalエポック毎→<BR>最終エポック|
+|0以下|（最初の・最終エポック含め）一切生成しない|
 
 <BR>
   
@@ -203,7 +205,13 @@ Discriminator.trainable=Falseの状態でCombined Modelをcompileしているの
 実装について。<br>
 Non-Saturating GANのGeneratorの損失関数の-Σ( log( D(G(z_i)) ) )は、「サンプルデータi全件に対応する正解ラベルが全部1（True）のみ」の場合のBinaryCrossEntropyLoss値でもあります。<br>
 よって、前掲のごとく、全偽物画像に対して正解ラベル1（本物）を充当する、という実装となります。<br>
-※このNon-Saturating GANのGeneratorの損失関数の実装は、既に一般的に広く行われているようです（実装者がそうと意識しているかはわかりませんが）。
+※このNon-Saturating GANのGeneratorの損失関数の実装は、既に一般的に広く行われているようです（実装者がそうと意識しているかはわかりませんが）。<BR>
+
+まとめると、以下の通りです。
+| GANの種類 | Generatorの損失関数 |実装概要|
+|   :---:   | :---:  |  :---          |
+|Min-Max GAN (従来の）|Σ( log( 1 – D(G(z_i)) ) )|（むしろこちらの実装を見たことがありません）|
+|Non-Saturating GAN|-Σ( log( D(G(z_i)) ) )|全偽物画像に対して正解ラベル1（本物）を充当|
 
 <BR>
   
