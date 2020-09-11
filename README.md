@@ -149,8 +149,22 @@ Epoch: 34　　                                                       →　エ�
 以下の通りです。
 | 訓練したい方 | 実際に訓練を施す方 |
 | :---         | :---         | 
-|Discriminator|Discriminatorを訓練する。<br>（誤差逆伝播はDiscriminator自身で止まるから）<br>Discriminator.trainable=Falseだが、Discriminator.trainable=Trueの時にcompileしてあるので、単体では訓練される。<br>![train_disc](https://user-images.githubusercontent.com/52105933/91540602-fdeed080-e955-11ea-9d2f-da803e49b321.png)|
-|Generator|コンテナのCombined Modelを訓練する。<BR>（Generator→Discriminatorと順伝播し、帰り道はDiscriminator→Generatorと一気通貫に誤差逆伝播するから）<br>Discriminator.trainable=Falseの状態でCombined Modelをcompileしているので、Discriminatorは誤差逆伝播の通り道になるだけで訓練はされず（パラメーターは更新されず）、Generatorのみ訓練される。<br>![train_gen](https://user-images.githubusercontent.com/52105933/91557082-ca6c7000-e96e-11ea-93ac-00eef1219e5c.png)|
+|Discriminator|Discriminator|
+|Generator|コンテナのCombined Model<br>（GeneratorとDiscriminatorを一気通貫で順伝播＆誤差逆伝播するから）|
+
+<br>
+
+- Discriminator訓練時<BR>
+Combined ModelにではなくDiscriminator自身に訓練を施します。<br>（誤差逆伝播はDiscriminator自身で止まるから）<br>
+Discriminator.trainable=Falseですが、Discriminator.trainable=Trueの時にcompileしてあるので、単体では訓練されます。<br>
+<br>![train_disc](https://user-images.githubusercontent.com/52105933/91540602-fdeed080-e955-11ea-9d2f-da803e49b321.png)
+
+<BR>
+  
+- Generator訓練時<BR>
+GeneratorにではなくCombined Modelに訓練を施します。<br>（Generator→Discriminatorと順伝播し、帰り道はDiscriminator→Generatorと一気通貫に誤差逆伝播するから）<br>
+Discriminator.trainable=Falseの状態でCombined Modelをcompileしているので、Discriminatorは誤差逆伝播の通り道になるだけで訓練はされず（パラメーターは更新されず）、Generatorのみ訓練されます。<br>
+<br>![train_gen](https://user-images.githubusercontent.com/52105933/91557082-ca6c7000-e96e-11ea-93ac-00eef1219e5c.png)
 
 <BR>
   
