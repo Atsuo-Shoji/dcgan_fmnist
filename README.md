@@ -18,8 +18,8 @@ demo_model_files/<br>
 &nbsp;└（h5ファイルやpickleファイル）<br>
 -------------<br>
 - dcgan_fmnist_kr.py：モデル本体。中身はclass dcgan_fmnist_kr です。モデルを動かすにはcommonフォルダが必要です。
-- DCGAN_FMNIST_Keras_demo.ipynb：デモ用のノートブックです。概要をつかむことが出来ます。このノートブックを動かすにはdemo_model_filesフォルダが必要です。
-- Fashion-MNISTデータセットは含まれていません。scikit-learn経由でダウンロードすることができます。
+- DCGAN_FMNIST_Keras_demo.ipynb：デモ用のノートブックです。概要をつかむことができます。このノートブックを動かすにはdemo_model_filesフォルダが必要です。
+- Fashion-MNISTデータセットは含まれていません。Keras経由でダウンロードすることができます。
   
 <BR>
   
@@ -28,7 +28,7 @@ dcgan_fmnist_kr.pyのclass dcgan_fmnist_kr が、モデルの実体です。<br>
 ![internal_structure](https://user-images.githubusercontent.com/52105933/91521676-2c0ee900-e933-11ea-8f19-bfa3b6604139.png)
 
 このclass dcgan_fmnist_kr をアプリケーション内でインスタンス化して、訓練や画像生成といったpublicインターフェースを呼び出す、という使い方をします。<br>
-**Generator、Discriminator、Combined Modelはdcgan_fmnist_kr内部に隠蔽され、外部から利用することはできません。**
+Generator、Discriminator、Combined Modelはdcgan_fmnist_kr内部に隠蔽され、外部から利用することはできません。
 ```
 #モデルのインポート 
 from dcgan_fmnist_kr import dcgan_fmnist_kr #モデル本体
@@ -40,10 +40,13 @@ gan_model_instance = dcgan_fmnist_kr(hoge, hoge, …)
 
 #このモデルインスタンスの訓練 
 result = gan_model_instance.train(hoge, hoge, …)
+
 #この訓練済モデルインスタンスから画像生成 
 img_gens = gan_model_instance.generate(hoge, hoge, …)
+
 #この訓練済モデルインスタンスの保存
 gan_model_instance.save_me(hoge, hoge, …)
+
 #別の訓練済モデルをこのモデルインスタンスに移植
 gan_model_instance.change_me(hoge, hoge, …)
 ```
