@@ -59,8 +59,8 @@ def normalize_data(data):
 
 def show_images(imgs, img_shape, rows, cols, channels_first=True, size_unit_inch=1):
     #複数の画像を一覧表示する
-    #グレー1チャンネルのみ対応
     
+    #チャンネル数を取得
     if channels_first==True:
         C, H, W = img_shape
     else:
@@ -69,21 +69,22 @@ def show_images(imgs, img_shape, rows, cols, channels_first=True, size_unit_inch
     num_imgs = imgs.shape[0]
     
     #imshowの仕様で、チャンネルが1の場合は、そのチャンネルのaxisをつぶさないといけない。
-    ch = C - 1
-        
+    if C==1:
+        imgs = imgs.reshape(-1, H, W)            
+            
     fig, axs = plt.subplots(rows, cols, figsize=(cols*size_unit_inch, rows*size_unit_inch), sharex=True, sharey=True) 
     curr_idx_imgs = 0
     for i in range(rows):
         for j in range(cols):
             if curr_idx_imgs < num_imgs:
-                if channels_first==True:
-                    axs[i, j].imshow(imgs[curr_idx_imgs, ch, :, :], cmap='gray')
+                if C==1:
+                    axs[i, j].imshow(imgs[curr_idx_imgs], cmap='gray')
                 else:
-                    axs[i, j].imshow(imgs[curr_idx_imgs, :, :, ch], cmap='gray')
+                    axs[i, j].imshow(imgs[curr_idx_imgs])                
             axs[i, j].axis('off')    
             curr_idx_imgs += 1
     plt.show()
-
+    
 def read_pickle_file(file_path):
     #指定されたパスのpickleファイルを読み込む。
     

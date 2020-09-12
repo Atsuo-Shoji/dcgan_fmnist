@@ -24,7 +24,7 @@ class dcgan_fmnist_kr():
         self._z_fixed_for_sample = np.random.normal(0, 1, (dcgan_fmnist_kr._NUM_SAMPLE_IMGS_CONST, self._z_dim))
     
         #generatorの実体の生成
-        self._generator = self._prepare_layers_generator(z_dim)
+        self._generator = self._prepare_layers_generator(z_dim, img_shape)
         #discriminatorの実体の生成
         self._discriminator = self._prepare_layers_discriminator(img_shape)
         
@@ -42,18 +42,21 @@ class dcgan_fmnist_kr():
         #_gan_combinedを使用可能に
         self._gan_combined.compile(loss='binary_crossentropy', optimizer=Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-8)) 
         
-    def _prepare_layers_generator(self, z_dim=100):
+    def _prepare_layers_generator(self, z_dim, img_shape):
         #generatorの実体を準備して返す。layersをつなげた状態で返す。compileはしない。
         
+        length_before_first_deconv2d = np.ceil(img_shape[0] / 4).astype(np.int)
+        ch_generated_img = img_shape[2]
+
         #generatorの実体はSequantialのインスタンス。Sequential記法。
         model_g = Sequential()
         
         #第1層　全結合　潜在変数z(N, z_dim)→(N, 7, 7, 256)に
         #Affine Layer (N, z_dim)→(N, 7*7*256=12544)
-        model_g.add(Dense(input_dim=z_dim, units=7*7*256, 
+        model_g.add(Dense(input_dim=z_dim, units=length_before_first_deconv2d*length_before_first_deconv2d*256, 
                           use_bias=True, activation=None, kernel_initializer='he_normal', bias_initializer='zeros'))
         #(N, 7*7*256=12544)→(N, 7, 7, 256)
-        model_g.add(Reshape((7, 7, 256)))
+        model_g.add(Reshape((length_before_first_deconv2d, length_before_first_deconv2d, 256)))
         
         #第2層　転置畳み込み　(N, 7, 7, 256)→(N, 14, 14, 128)
         #転置畳み込みlayer
@@ -62,7 +65,7 @@ class dcgan_fmnist_kr():
         #バッチ正規化layer
         model_g.add(BatchNormalization(axis=3))
         #活性化関数layer　LeakyReLU
-        model_g.add(LeakyReLU(alpha=0.01))
+        model_g.add(LeakyReLU(alpha=0.01)) 
         
         #第3層　転置畳み込み　(N, 14, 14, 128)→(N, 14, 14, 64)
         #転置畳み込みlayer
@@ -73,14 +76,14 @@ class dcgan_fmnist_kr():
         #活性化関数layer　LeakyReLU
         model_g.add(LeakyReLU(alpha=0.01))
         
-        #第4層（出力）　転置畳み込み　(N, 14, 14, 128)→(N, 28, 28, 1)
+        #第4層（出力）　転置畳み込み　(N, 14, 14, 64)→(N, 28, 28, 1)
         #転置畳み込みlayer　活性化関数はtanh
-        model_g.add(Conv2DTranspose(filters=1, kernel_size=(3,3), strides=(2,2), padding='same', data_format='channels_last',
+        model_g.add(Conv2DTranspose(filters=ch_generated_img, kernel_size=(3,3), strides=(2,2), padding='same', data_format='channels_last',
                          use_bias=True, activation='tanh', kernel_initializer='glorot_normal', bias_initializer='zeros'))
         
         return model_g
     
-    def _prepare_layers_discriminator(self, img_shape=(28, 28, 1)):
+    def _prepare_layers_discriminator(self, img_shape):
         #discriminatorの実体を準備して返す。layersをつなげた状態で返す。compileはしない。
         
         #discriminatorの実体はSequantialのインスタンス。Sequential記法。
@@ -110,6 +113,7 @@ class dcgan_fmnist_kr():
         #第4層（出力）　2値分類の確率
         #画像Tensorを2次元にするlayer　(N, 4, 4, 128)→(N, 4*4*128)
         model_d.add(Flatten()) #(N, 4*4*128)
+        #model_d.add(Dropout(0.4))
         #全結合&シグモイドlayer
         model_d.add(Dense(units=1, 
                           use_bias=True, activation='sigmoid', kernel_initializer='glorot_normal', bias_initializer='zeros'))
