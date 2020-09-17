@@ -27,19 +27,20 @@ Kerasで構築したDCGANです。<br>
 #### DiscriminatorのAccuracy
 ![training_20200827_03_accuracy](https://user-images.githubusercontent.com/52105933/93406903-d8594500-f8cb-11ea-8f9b-b55a5f015908.png)
 
-#### Discriminatorは本物画像（「real」）と生成画像（「fake」）それぞれをどのくらいの確率で本物と推定したか
+#### Discriminatorは本物画像（「real」）と合成画像（「fake」）それぞれをどのくらいの確率で本物と推定したか
 ![training_20200827_03_probability](https://user-images.githubusercontent.com/52105933/93407060-2f5f1a00-f8cc-11ea-88da-dc88ea4169bc.png)
 
 <BR>
 
 ## ディレクトリ構成・動かすのに必要な物
 dcgan_fmnist_kr.py<BR>
-DCGAN_FMNIST_Keras_demo.ipynb<BR>
 common/<br>
 &nbsp;└tools.py<br>
+-----以下デモ用ノートブック関連-----<br>
+DCGAN_FMNIST_Keras_demo.ipynb<BR>
 demo_model_files/<br>
 &nbsp;└（h5ファイルやpickleファイル）<br>
--------------<br>
+---------------------------------------------------------------<br>
 - dcgan_fmnist_kr.py：モデル本体。中身はclass dcgan_fmnist_kr です。モデルを動かすにはcommonフォルダが必要です。
 - DCGAN_FMNIST_Keras_demo.ipynb：デモ用のノートブックです。概要をつかむことができます。このノートブックを動かすにはdemo_model_filesフォルダが必要です。
 - Fashion-MNISTデータセットは含まれていません。Keras経由でダウンロードすることができます。
