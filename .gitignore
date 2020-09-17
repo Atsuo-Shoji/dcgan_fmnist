@@ -3,7 +3,9 @@ __pycache__/
 model_files/
 results/
 Chapter_4_DCGAN*
-DCGAN_FMNIST_Keras_dev.ipynb
+DCGAN_FMNIST_Keras_dev*
 readme_pre/
 common/__pycache__/
 github/
+保管庫/
+TensorFlowバージョン問題/

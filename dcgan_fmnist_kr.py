@@ -1,10 +1,20 @@
 # -*- coding: utf-8 -*-
+from tensorflow.keras.models import Sequential #モデルの実体　Sequential記法
+from tensorflow.keras.layers import (Activation, BatchNormalization, Dense, Dropout) #モデルを構成する各layerの定義のため
+from tensorflow.keras.layers import (Conv2D, Flatten, Conv2DTranspose, Reshape) #モデルを構成する各layerの定義のため　画像認識と生成用
+from tensorflow.keras.optimizers import Adam #オプティマイザーにAdamを使用するため
+from tensorflow.keras.layers import LeakyReLU #活性化関数にLeakyReLUを使用するため
+from tensorflow.keras.models import load_model #generatorとdiscriminatorの保存ファイルをloadするため
+
+'''
 from keras.models import Sequential #モデルの実体　Sequential記法
 from keras.layers import (Activation, BatchNormalization, Dense, Dropout) #モデルを構成する各layerの定義のため
 from keras.layers import (Conv2D, Flatten, Conv2DTranspose, Reshape) #モデルを構成する各layerの定義のため　画像認識と生成用
 from keras.optimizers import Adam #オプティマイザーにAdamを使用するため
 from keras.layers.advanced_activations import LeakyReLU #活性化関数にLeakyReLUを使用するため
 from keras.models import load_model #generatorとdiscriminatorの保存ファイルをloadするため
+'''
+
 import numpy as np
 from datetime import datetime
 from common.tools import *
@@ -43,82 +53,109 @@ class dcgan_fmnist_kr():
         self._gan_combined.compile(loss='binary_crossentropy', optimizer=Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-8)) 
         
     def _prepare_layers_generator(self, z_dim, img_shape):
+        
+        ##########カスタマイズ可能箇所##########
+        ####オリジナルでは、Fashion-MNISTにチューニングしてあります。####
+        ####以下の箇所を必要に応じてカスタマイズしてください。####
+        
         #generatorの実体を準備して返す。layersをつなげた状態で返す。compileはしない。
         
-        length_before_first_deconv2d = np.ceil(img_shape[0] / 4).astype(np.int)
-        ch_generated_img = img_shape[2]
-
         #generatorの実体はSequantialのインスタンス。Sequential記法。
         model_g = Sequential()
         
-        #第1層　全結合　潜在変数z(N, z_dim)→(N, 7, 7, 256)に
-        #Affine Layer (N, z_dim)→(N, 7*7*256=12544)
-        model_g.add(Dense(input_dim=z_dim, units=length_before_first_deconv2d*length_before_first_deconv2d*256, 
-                          use_bias=True, activation=None, kernel_initializer='he_normal', bias_initializer='zeros'))
-        #(N, 7*7*256=12544)→(N, 7, 7, 256)
-        model_g.add(Reshape((length_before_first_deconv2d, length_before_first_deconv2d, 256)))
+        if img_shape==(28, 28, 1):
+            
+            #28x28　1チャンネルの画像の場合
+
+            length_before_first_deconv2d = np.ceil(img_shape[0] / 4).astype(np.int)
+            ch_generated_img = img_shape[2]
+
+            #第1層　全結合　潜在変数z(N, z_dim)→(N, 7, 7, 256)に
+            #Affine Layer (N, z_dim)→(N, 7*7*256=12544)
+            model_g.add(Dense(input_dim=z_dim, units=length_before_first_deconv2d*length_before_first_deconv2d*256, 
+                              use_bias=True, activation=None, kernel_initializer='he_normal', bias_initializer='zeros'))
+            #(N, 7*7*256=12544)→(N, 7, 7, 256)
+            model_g.add(Reshape((length_before_first_deconv2d, length_before_first_deconv2d, 256)))
+            
+            #第2層　転置畳み込み　(N, 7, 7, 256)→(N, 14, 14, 128)
+            #転置畳み込みlayer
+            model_g.add(Conv2DTranspose(filters=128, kernel_size=(3,3), strides=(2,2), padding='same', data_format='channels_last',
+                            use_bias=True, activation=None, kernel_initializer='he_normal', bias_initializer='zeros'))
+            #バッチ正規化layer
+            model_g.add(BatchNormalization(axis=3)) 
+            #活性化関数layer　LeakyReLU
+            model_g.add(LeakyReLU(alpha=0.01))
+            
+            #第3層　転置畳み込み　(N, 14, 14, 128)→(N, 14, 14, 64)
+            #転置畳み込みlayer
+            model_g.add(Conv2DTranspose(filters=64, kernel_size=(3,3), strides=(1,1), padding='same', data_format='channels_last',
+                            use_bias=True, activation=None, kernel_initializer='he_normal', bias_initializer='zeros'))
+            #バッチ正規化layer
+            model_g.add(BatchNormalization(axis=3))
+            #活性化関数layer　LeakyReLU
+            model_g.add(LeakyReLU(alpha=0.01))
+                        
+            #第4層（出力）　転置畳み込み　(N, 14, 14, 64)→(N, 28, 28, 1)
+            #転置畳み込みlayer　活性化関数はtanh
+            model_g.add(Conv2DTranspose(filters=ch_generated_img, kernel_size=(3,3), strides=(2,2), padding='same', data_format='channels_last',
+                            use_bias=True, activation='tanh', kernel_initializer='glorot_normal', bias_initializer='zeros')) 
         
-        #第2層　転置畳み込み　(N, 7, 7, 256)→(N, 14, 14, 128)
-        #転置畳み込みlayer
-        model_g.add(Conv2DTranspose(filters=128, kernel_size=(3,3), strides=(2,2), padding='same', data_format='channels_last',
-                         use_bias=True, activation=None, kernel_initializer='he_normal', bias_initializer='zeros'))
-        #バッチ正規化layer
-        model_g.add(BatchNormalization(axis=3))
-        #活性化関数layer　LeakyReLU
-        model_g.add(LeakyReLU(alpha=0.01)) 
-        
-        #第3層　転置畳み込み　(N, 14, 14, 128)→(N, 14, 14, 64)
-        #転置畳み込みlayer
-        model_g.add(Conv2DTranspose(filters=64, kernel_size=(3,3), strides=(1,1), padding='same', data_format='channels_last',
-                         use_bias=True, activation=None, kernel_initializer='he_normal', bias_initializer='zeros'))
-        #バッチ正規化layer
-        model_g.add(BatchNormalization(axis=3))
-        #活性化関数layer　LeakyReLU
-        model_g.add(LeakyReLU(alpha=0.01))
-        
-        #第4層（出力）　転置畳み込み　(N, 14, 14, 64)→(N, 28, 28, 1)
-        #転置畳み込みlayer　活性化関数はtanh
-        model_g.add(Conv2DTranspose(filters=ch_generated_img, kernel_size=(3,3), strides=(2,2), padding='same', data_format='channels_last',
-                         use_bias=True, activation='tanh', kernel_initializer='glorot_normal', bias_initializer='zeros'))
-        
+        else:
+            raise ValueError("対象外のimg_shapeです。指定されたimg_shapeに対応させるにはカスタマイズが必要です。")
+
         return model_g
     
+        ##########カスタマイズ可能箇所　終わり##########
+    
     def _prepare_layers_discriminator(self, img_shape):
+        
+        ##########カスタマイズ可能箇所##########
+        ####オリジナルでは、Fashion-MNISTにチューニングしてあります。####
+        ####以下の箇所を必要に応じてカスタマイズしてください。####        
+        
         #discriminatorの実体を準備して返す。layersをつなげた状態で返す。compileはしない。
         
         #discriminatorの実体はSequantialのインスタンス。Sequential記法。
         model_d = Sequential()
         
-        #第1層　畳み込み　(N, 28, 28, 1)→(N, 14, 14, 32)
-        #畳み込みlayer
-        model_d.add(Conv2D(input_shape=img_shape, filters=32, kernel_size=(3,3), strides=(2,2), padding='same', 
-                           data_format='channels_last', use_bias=True, activation=None, 
-                           kernel_initializer='he_normal', bias_initializer='zeros'))
-        model_d.add(LeakyReLU(alpha=0.01))
-        
-        #第2層　畳み込み　(N, 14, 14, 32)→(N, 7, 7, 64)
-        #畳み込みlayer
-        model_d.add(Conv2D(filters=64, kernel_size=(3,3), strides=(2,2), padding='same', data_format='channels_last',
-                         use_bias=True, activation=None, kernel_initializer='he_normal', bias_initializer='zeros'))
-        #活性化関数layer　LeakyReLU
-        model_d.add(LeakyReLU(alpha=0.01))
-        
-        #第3層　畳み込み　(N, 7, 7, 64)→(N, 4, 4, 128)
-        #畳み込みlayer
-        model_d.add(Conv2D(filters=128, kernel_size=(3,3), strides=(2,2), padding='same', data_format='channels_last',
-                         use_bias=True, activation=None, kernel_initializer='he_normal', bias_initializer='zeros'))
-        #活性化関数layer　LeakyReLU
-        model_d.add(LeakyReLU(alpha=0.01))
-        
-        #第4層（出力）　2値分類の確率
-        #画像Tensorを2次元にするlayer　(N, 4, 4, 128)→(N, 4*4*128)
-        model_d.add(Flatten()) #(N, 4*4*128)
-        #model_d.add(Dropout(0.4))
-        #全結合&シグモイドlayer
-        model_d.add(Dense(units=1, 
-                          use_bias=True, activation='sigmoid', kernel_initializer='glorot_normal', bias_initializer='zeros'))
+        if img_shape==(28, 28, 1):
+            
+            #28x28　1チャンネルの画像の場合
+
+            #第1層　畳み込み　(N, 28, 28, 1)→(N, 14, 14, 32)
+            #畳み込みlayer
+            model_d.add(Conv2D(input_shape=img_shape, filters=32, kernel_size=(3,3), strides=(2,2), padding='same', 
+                              data_format='channels_last', use_bias=True, activation=None, 
+                              kernel_initializer='he_normal', bias_initializer='zeros'))
+            model_d.add(LeakyReLU(alpha=0.01))
+            
+            #第2層　畳み込み　(N, 14, 14, 32)→(N, 7, 7, 64)
+            #畳み込みlayer
+            model_d.add(Conv2D(filters=64, kernel_size=(3,3), strides=(2,2), padding='same', data_format='channels_last',
+                            use_bias=True, activation=None, kernel_initializer='he_normal', bias_initializer='zeros'))
+            #活性化関数layer　LeakyReLU
+            model_d.add(LeakyReLU(alpha=0.01))
+            
+            #第3層　畳み込み　(N, 7, 7, 64)→(N, 4, 4, 128)
+            #畳み込みlayer
+            model_d.add(Conv2D(filters=128, kernel_size=(3,3), strides=(2,2), padding='same', data_format='channels_last',
+                            use_bias=True, activation=None, kernel_initializer='he_normal', bias_initializer='zeros'))
+            #活性化関数layer　LeakyReLU
+            model_d.add(LeakyReLU(alpha=0.01))
+
+            #第4層（出力）　2値分類の確率
+            #画像Tensorを2次元にするlayer　(N, 4, 4, 128)→(N, 4*4*128)
+            model_d.add(Flatten()) #(N, 4*4*128)
+            #全結合&シグモイドlayer
+            model_d.add(Dense(units=1, 
+                              use_bias=True, activation='sigmoid', kernel_initializer='glorot_normal', bias_initializer='zeros'))
+
+        else:
+            raise ValueError("対象外のimg_shapeです。指定されたimg_shapeに対応させるにはカスタマイズが必要です。")
         
         return model_d
+    
+        ##########カスタマイズ可能箇所　終わり##########
     
     def _prepare_combined_models_gan(self, generator, discriminator):
         #generatorとdiscriminatorを結合させたcombined modelを返す。modelをつなげた状態で返す。compileはしない。
@@ -316,7 +353,7 @@ class dcgan_fmnist_kr():
     
     def train(self, imgs_train, epochs, batch_size=128, ls_epsilon=0, sample_img_interval=0):
         #訓練関数
-        #imgs_tarin：訓練データである画像データ。(画像枚数, 28, 28, 1)。値域は[0, 1]か「0, 255」であること。
+        #imgs_train：訓練データである画像データ。shapeは(画像枚数, *self._img_shape)。値域は[0, 1]か「0, 255」であること。
         #sample_img_interval：何エポック毎にgeneratorによるサンプルイメージ出力と表示を行うか。0以下だと行わない。
         
         start_time = datetime.now()

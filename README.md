@@ -1,11 +1,34 @@
 # DCGANをKerasでマジメに構築してみました
 
-DCGANをKerasでマジメに構築してみました。画像データセットはFashion-MNISTを使用しています。<BR><BR>
+DCGANをKerasでマジメに構築してみました。<br>
+訓練やモデル保存＆再利用、といった必須機能を備えています。<br>
+画像データセットのFashion-MNISTにチューニングした構成になっています。<br>
+他の画像データセット向けにカスタマイズすることができます。<BR><BR>
 ![real_vs_fake3](https://user-images.githubusercontent.com/52105933/91722778-b5dde100-ebd5-11ea-9398-b29ef9094590.png)
+
+<BR>
   
 ## 概要
-Kerasで構築したDCGANです。画像データセットFashion-MNISTを訓練データとして使っています。<br>
-画像データセットは、Fashion-MNIST以外でも、1チャンネルのグレー画像で軽い物なら、マトモに動くはずです。MNISTは確認済です。
+Kerasで構築したDCGANです。<br>
+訓練　→　画像生成　→　モデル保存　→　再利用　という一連のサイクルに対応した機能をpublicインターフェース上に備えており、これらの機能を手軽に使用することができます。<br>
+画像データセットのFashion-MNISTにチューニングしたlayer構成になっています。Fashion-MNIST以外でも、1チャンネルのグレー画像で軽い物なら、それなりの画像を合成すると思います。MNISTは確認済です。<br>
+他の画像データセット向けにカスタマイズすることができます。<BR><BR>
+
+<BR>
+  
+### 訓練の成果（Fashion-MNISTにチューニングしてあるオリジナル状態で訓練）
+
+#### 生成画像
+![fake](https://user-images.githubusercontent.com/52105933/93406729-5ff28400-f8cb-11ea-8fcb-c6da7955b385.png)
+
+#### GeneratorとDiscriminatorのLoss
+![training_20200827_03_loss](https://user-images.githubusercontent.com/52105933/93406849-b233a500-f8cb-11ea-979c-977abd6f2bce.png)
+
+#### DiscriminatorのAccuracy
+![training_20200827_03_accuracy](https://user-images.githubusercontent.com/52105933/93406903-d8594500-f8cb-11ea-8f9b-b55a5f015908.png)
+
+#### Discriminatorは本物画像（「real」）と合成画像（「fake」）それぞれをどのくらいの確率で本物と推定したか
+![training_20200827_03_probability](https://user-images.githubusercontent.com/52105933/93407060-2f5f1a00-f8cc-11ea-88da-dc88ea4169bc.png)
 
 <BR>
 
@@ -25,7 +48,7 @@ demo_model_files/<br>
   
 ## モデルの構成
 dcgan_fmnist_kr.pyのclass dcgan_fmnist_kr が、モデルの実体です。<br><br>
-![internal_structure](https://user-images.githubusercontent.com/52105933/91521676-2c0ee900-e933-11ea-8f19-bfa3b6604139.png)
+![internal_structure](https://user-images.githubusercontent.com/52105933/93408685-1bb5b280-f8d0-11ea-93f6-d17b04d854d6.png)
 
 このclass dcgan_fmnist_kr をアプリケーション内でインスタンス化して、訓練や画像生成といったpublicインターフェースを呼び出す、という使い方をします。<br>
 Generator、Discriminator、Combined Modelはdcgan_fmnist_kr内部に隠蔽され、外部から利用することはできません。
@@ -51,7 +74,12 @@ gan_model_instance.save_me(hoge, hoge, …)
 gan_model_instance.change_me(hoge, hoge, …)
 ```
 
-<BR>
+#### カスタマイズ可能箇所
+Generator、Discriminatorそれぞれを、特定の画像データセット向けにカスタマイズできます。<br>
+具体的には、以下の箇所のtensorflow.kerasのlayer構成を作り替えるだけで、他の画像データセット向けのモデルにすることができます。<br>
+![internal_structure_customize](https://user-images.githubusercontent.com/52105933/93408561-d7c2ad80-f8cf-11ea-9efd-f8b1ea5a0b4d.png)
+  
+<br>
 
 ## class dcgan_fmnist_kr　のpublicインターフェース
 
@@ -80,7 +108,7 @@ class dcgan_fmnist_krのインスタンスを生成する。<br><br>
 | :---         |     :---:      |     :---:     | :---         |
 |name|文字列|必須|このモデルインスタンスの名前。|
 |z_dim|整数|100|潜在変数zの次元。<br>今後、このインスタンスは、潜在変数の次元はここで指定されたものであるという前提で挙動する。変更方法は無い。|
-|img_shape|tuple|(28, 28, 1)|画像1枚のshape。**チャンネルのaxisは必ず最後であること（Kerasで言うところのdata_format='channels_last'）**<br>今後、このインスタンスは、画像のshapeはここで指定されたものであるという前提で挙動する。変更方法は無い。|
+|img_shape|tuple|(28, 28, 1)|画像1枚のshape。<br>今後、このインスタンスは、画像のshapeはここで指定されたものであるという前提で挙動する。変更方法は無い。<br>カスタマイズしていないオリジナル状態では(28, 28, 1)のみ受け付ける。他はエラーとなる。<br>**チャンネルのaxisは必ず最後であること（Kerasで言うところのdata_format='channels_last'）。**|
 
 ※Discriminator、Generator、Combined Modelのインスタンス化とcompileについて<br>
 \__init()\__内で、上記3つのインスタンス化とcompileを行っています。<br>
