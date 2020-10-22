@@ -1,4 +1,4 @@
-# Kerasで構築したDCGAN～画像データセットに合わせてカスタマイズ可能～
+# DCGAN ～画像データセットに合わせてカスタマイズ可能～ （tensorflow.kerasを使用）
 
 Kerasで構築したDCGANです。<br>
 訓練やモデル保存＆再利用、といった必須機能をはじめから備えています。<br>
@@ -11,13 +11,13 @@ Kerasで構築したDCGANです。<br>
 ## 概要
 Kerasで構築したDCGANです。<br>
 訓練　→　画像生成　→　モデル保存　→　再利用　という一連のサイクルに対応した機能をpublicインターフェース上にはじめから備えており、これらの機能を作り込みこと無く手軽に使用することができます。<br>
-DiscriminatorとGeneratorのlayer構成を変えるだけで、他の画像データセット向けのDCGANにすることができます。<BR>
+DiscriminatorとGeneratorのlayer構成を変えるだけで、他の画像データセット向けのDCGANにすることができます。<BR><br>
 オリジナル状態ではFashion-MNISTにチューニングしたlayer構成になっています。Fashion-MNIST以外でも、1チャンネルのグレー画像で軽い物なら、それなりの画像を生成すると思います。MNISTは確認済です。<br>
 
 
 <BR>
   
-### 訓練の成果（Fashion-MNISTにチューニングしてあるオリジナル状態で訓練）
+### 訓練の成果（オリジナル状態であるFashion-MNISTにチューニングする訓練）
 
 #### 生成画像
 ![fake](https://user-images.githubusercontent.com/52105933/93406729-5ff28400-f8cb-11ea-8fcb-c6da7955b385.png)
