@@ -42,8 +42,6 @@ DiscriminatorとGeneratorのlayer構成を変えるだけで、他の画像デ�
 - Keras 2.3.1
 - tensorflow 1.15.0
 - h5py 2.10.0
-- Pillow 5.4.1
-- matplotlib 3.2.2
 
 これらのインストールは、各種リソースを参考にしてください。<br>
 後の「モデルの構成」にも記載しています。<br>
