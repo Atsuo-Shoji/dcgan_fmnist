@@ -1,4 +1,4 @@
-# DCGAN ～画像データセットに合わせてカスタマイズ可能～ （tensorflow.kerasを使用）
+# DCGAN Fashion-MNISTの模倣画像を生成 （tensorflow.kerasを使用）
 
 tensorflow.kerasで構築したDCGANです。<br>
 Fashion-MNISTの模倣画像を生成します。<br><br>
@@ -17,7 +17,7 @@ DiscriminatorとGeneratorのlayer構成を変えるだけで、他の画像デ�
 
 <BR>
   
-## 訓練の成果（オリジナル状態であるFashion-MNISTにチューニングする訓練）
+## 訓練の成果
 
 #### 生成画像
 ![fake](https://user-images.githubusercontent.com/52105933/93406729-5ff28400-f8cb-11ea-8fcb-c6da7955b385.png)
@@ -46,7 +46,7 @@ DiscriminatorとGeneratorのlayer構成を変えるだけで、他の画像デ�
 <br>
 
 - Discriminator訓練時<BR>
-Combined ModelにではなくDiscriminator自身に訓練を施します。<br>（誤差逆伝播はDiscriminator自身で止まるから）<br>
+Combined ModelにではなくDiscriminator自身に訓練を施します。<br>（誤差逆伝播はDiscriminator自身で止まるため）<br>
 Discriminator.trainable=Falseですが、Discriminator.trainable=Trueの時にcompileしてあるので、単体では訓練されます。<br>
 <br>![train_disc](https://user-images.githubusercontent.com/52105933/91540602-fdeed080-e955-11ea-9d2f-da803e49b321.png)
 
